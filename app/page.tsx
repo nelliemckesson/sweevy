@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { DeployButton } from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
@@ -12,9 +13,9 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
 
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
+        <div className="flex-1 flex flex-col items-center gap-10 justify-center max-w-5xl p-5 mt-24">
           <Hero />
-          <div className="">
+          <div className="flex-1 flex flex-row items-start justify-center">
             <AuthButton />
           </div>
         </div>
