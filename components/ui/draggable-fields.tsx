@@ -41,7 +41,7 @@ export function DraggableFields(props) {
 
   const addField = () => {
     const newFields = [...fields];
-    newFields.push({label: '', value: '', position: fields.length});
+    newFields.push({label: '', value: '', position: fields.length, changed: true});
     handleSetFields(newFields);
   }
 
@@ -77,6 +77,7 @@ export function DraggableFields(props) {
                 onChange={(e) => {
                   const newFields = [...fields];
                   newFields[index].include = e.target.checked;
+                  newfields[index].changed = true;
                   handleSetFields(newFields);
                 }}
               />
@@ -87,6 +88,7 @@ export function DraggableFields(props) {
                 onChange={(e) => {
                   const newFields = [...fields];
                   newFields[index].value = e.target.value;
+                  newfields[index].changed = true;
                   handleSetFields(newFields);
                 }}
                 className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

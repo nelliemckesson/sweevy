@@ -11,7 +11,7 @@ export async function ContactInfo(props) {
 
   // editable form needs client, thus will be a subcomponent
   return (
-    <div className="flex-1 w-full flex flex-col gap-3">
+    <div className="flex-1 w-full flex flex-col gap-3 mb-4">
       <h2 className="text-xl">Contact Info</h2>
       <ContactInfoForm fields={data || {}} userId={props.userId} />
     </div>

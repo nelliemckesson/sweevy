@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X } from 'lucide-react';
 import { DownloadButton } from "@/components/download-button";
 import { ContactInfo } from "@/components/resume/contact-info";
+import { Skills } from "@/components/resume/skills";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -45,6 +46,7 @@ export default async function ProtectedPage() {
 
       <div className="max-w-4xl w-4/5 border p-5">
         <ContactInfo userId={user.sub} supabase={supabase} />
+        <Skills userId={user.sub} supabase={supabase} />
       </div>
 
     </div>

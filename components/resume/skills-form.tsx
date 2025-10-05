@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setContactInfo } from "@/app/actions/db";
 
-export function ContactInfoForm(props) {
+export function SkillsForm(props) {
   // [{label: 'City', value: 'Portland, OR', position: 4}]
   const [fields, setFields] = useState([]);
   const [originalFields, setOriginalFields] = useState([]);
@@ -17,14 +17,14 @@ export function ContactInfoForm(props) {
   }
 
   const handleSave = async () => {
-    // other tables use the "changed" prop for upserting rows,
-    // but contactinfo is set up slightly differently
     const cleanedFields = fields.map(field => {
+      if (field.changed) {
+        // upsert the changed field
+      }
       const { changed: _, ...rest } = field;
       return rest;
     });
-    let newFields = await setContactInfo(props.userId, cleanedFields);
-    setOriginalFields(fields);
+    setOriginalFields(cleanedFields);
     setHasChanges(false);
   }
 
