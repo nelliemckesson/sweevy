@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { GripVertical, X, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-export default function DraggableFields(props) {
+export function DraggableFields(props) {
   const [draggedItem, setDraggedItem] = useState(null);
 
   const { fields, handleSetFields } = props;
@@ -25,7 +25,7 @@ export default function DraggableFields(props) {
     newFields.splice(draggedItem, 1);
     newFields.splice(index, 0, draggedField);
 
-    // Update positions to match new order
+    // update positions to match new order
     const fieldsWithUpdatedPositions = newFields.map((field, idx) => ({
       ...field,
       position: idx
@@ -68,12 +68,17 @@ export default function DraggableFields(props) {
           
           <div className="flex-1">
             <div className="flex flex-row gap-4">
-              <input 
-                type="checkbox" 
-                id={`include${field.position}`} 
+              <input
+                type="checkbox"
+                id={`include${field.position}`}
                 name={`include${field.position}`}
                 aria-label="Include field in download"
-                checked
+                checked={field.include}
+                onChange={(e) => {
+                  const newFields = [...fields];
+                  newFields[index].include = e.target.checked;
+                  handleSetFields(newFields);
+                }}
               />
               <input
                 type="text"

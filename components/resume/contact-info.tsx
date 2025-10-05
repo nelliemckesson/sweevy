@@ -1,4 +1,4 @@
-import ContactInfoForm from "@/components/resume/contact-info-form";
+import { ContactInfoForm } from "@/components/resume/contact-info-form";
 import { fetchContactInfo } from "@/app/actions/db";
 
 // --------

@@ -9,6 +9,7 @@ export interface ContactField {
   label: string;
   value: string;
   position: number;
+  include: boolean;
 }
 
 export async function fetchContactInfo(userId: string): Promise<ContactField[] | null> {

@@ -8,7 +8,6 @@ export function ResumeButton() {
   const router = useRouter();
 
   const goToResume = async () => {
-    const supabase = createClient();
     router.push("/protected");
   };
 

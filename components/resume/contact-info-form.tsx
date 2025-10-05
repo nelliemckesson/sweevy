@@ -2,24 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import DraggableFields from "@/components/ui/draggable-fields";
+import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setContactInfo } from "@/app/actions/db";
 
-export default function ContactInfoForm(props) {
+export function ContactInfoForm(props) {
   // [{label: 'City', value: 'Portland, OR', position: 4}]
   const [fields, setFields] = useState([]);
   const [originalFields, setOriginalFields] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleSetFields = (newFields) => {
-    setFields(newFields);
+    console.log(originalFields);
+    console.log(newFields);
+    setFields(prev => newFields);
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
   }
 
   const handleSave = async () => {
-    console.log("saving!");
     let newFields = await setContactInfo(props.userId, fields);
-    console.log("saved!");
     setOriginalFields(fields);
     setHasChanges(false);
   }
@@ -30,12 +30,10 @@ export default function ContactInfoForm(props) {
   }
 
   useEffect(() => {
-    console.log(props.fields);
-
     if (props.fields) {
       const sortedFields = props.fields.sort((a, b) => a.position - b.position);
       setFields(sortedFields);
-      setOriginalFields(sortedFields);
+      setOriginalFields(JSON.parse(JSON.stringify(sortedFields)));
     }
   }, [props.fields]);
 
