@@ -15,7 +15,7 @@ export default async function ProtectedPage() {
   const user = data?.claims;
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12 border border-foreground/50">
+    <div className="flex-1 w-full flex flex-col gap-3">
       <ContactInfo userId={user.sub} supabase={supabase} />
     </div>
   );

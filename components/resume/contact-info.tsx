@@ -1,4 +1,5 @@
-import { fetchContactInfo, setContactInfo } from "@/lib/db";
+import ContactInfoForm from "@/components/resume/contact-info-form";
+import { fetchContactInfo } from "@/lib/db";
 
 // --------
 // DESCRIPTION: 
@@ -6,12 +7,13 @@ import { fetchContactInfo, setContactInfo } from "@/lib/db";
 // --------
 export async function ContactInfo(props) {
   // keep data actions server-side
-  const { data } = await fetchContactInfo(props.userId, props.supabase);
+  const data = await fetchContactInfo(props.userId, props.supabase);
 
   // editable form needs client, thus will be a subcomponent
   return (
-    <div className="flex-1 w-full flex flex-col gap-12 border border-foreground/50">
-      
+    <div className="flex-1 w-full flex flex-col gap-3">
+      <h2 className="text-xl">Contact Info</h2>
+      <ContactInfoForm fields={data || {}} />
     </div>
   );
 }

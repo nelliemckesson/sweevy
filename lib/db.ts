@@ -20,8 +20,7 @@ export async function fetchContactInfo(userId: string) {
   }
 
   if (contactinfo) {
-    console.log(contactinfo);
-    return contactinfo;
+    return contactinfo.fields;
   }
 
   return null;
