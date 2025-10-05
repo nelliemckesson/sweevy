@@ -3,19 +3,10 @@
 import { useState, useEffect } from 'react';
 import { GripVertical, X } from 'lucide-react';
 
-interface Field {
-  position: number;
-  label: string;
-  value: string;
-}
-
-interface DraggableFieldsProps {
-  fields: Record<string, Field>;
-}
-
-export default function DraggableFields({ fields: propsFields }: DraggableFieldsProps) {
-  const [fields, setFields] = useState<Field[]>([]);
-  const [draggedItem, setDraggedItem] = useState<number | null>(null);
+// props types are validated in earlier components
+export default function DraggableFields(props) {
+  const [fields, setFields] = useState([]);
+  const [draggedItem, setDraggedItem] = useState(null);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedItem(index);
@@ -41,17 +32,17 @@ export default function DraggableFields({ fields: propsFields }: DraggableFields
     setDraggedItem(null);
   };
 
-  const removeField = (position: string) => {
+  const removeField = (position: number) => {
     setFields(fields.filter(field => field.position !== position));
   };
 
   useEffect(() => {
-    console.log(Object.values(propsFields));
+    console.log(props.fields);
 
-    if (propsFields) {
-      setFields(Object.values(propsFields).sort((a, b) => a.position - b.position));
+    if (props.fields) {
+      setFields(props.fields.sort((a, b) => a.position - b.position));
     }
-  }, [propsFields]);
+  }, [props.fields]);
 
   return (
     <div className="space-y-2">
@@ -62,7 +53,7 @@ export default function DraggableFields({ fields: propsFields }: DraggableFields
           onDragStart={(e) => handleDragStart(e, index)}
           onDragOver={(e) => handleDragOver(e, index)}
           onDragEnd={handleDragEnd}
-          className={`group flex items-center gap-3 p-2 bg-white border rounded-lg transition-all ${
+          className={`group flex items-center gap-3 bg-white rounded-lg transition-all ${
             draggedItem === index ? 'opacity-50 scale-95' : 'opacity-100'
           } hover:border-blue-300 hover:shadow-sm`}
         >
@@ -71,15 +62,16 @@ export default function DraggableFields({ fields: propsFields }: DraggableFields
           </div>
           
           <div className="flex-1">
-            <div className="flex flex-col gap-1">
-              {field.label && (
-                <label className="flex-2 block text-sm font-medium text-gray-600">
-                  {field.label}
-                </label>
-              )}
+            <div className="flex flex-row gap-4">
+              <input 
+                type="checkbox" 
+                id={`include${field.position}`} 
+                name={`include${field.position}`}
+              />
               <input
                 type="text"
                 value={field.value}
+                placeholder={field.label || "Type some text..."}
                 onChange={(e) => {
                   const newFields = [...fields];
                   newFields[index].value = e.target.value;

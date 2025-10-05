@@ -5,7 +5,13 @@ import { redirect } from "next/navigation";
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-export async function fetchContactInfo(userId: string) {
+export interface ContactField {
+  label: string;
+  value: string;
+  position: number;
+}
+
+export async function fetchContactInfo(userId: string): Promise<ContactField[] | null> {
   const supabase = await createClient();
   
   let { data: contactinfo, error } = await supabase
@@ -20,13 +26,14 @@ export async function fetchContactInfo(userId: string) {
   }
 
   if (contactinfo) {
+    // [{label: 'City', value: 'Portland, OR', position: 4}]
     return contactinfo.fields;
   }
 
   return null;
 }
 
-export async function setContactInfo(userId: string, fields: object) {
+export async function setContactInfo(userId: string, fields: ContactField[]) {
   const supabase = await createClient();
   
   let { error } = await supabase.from('contactinfo').upsert({
