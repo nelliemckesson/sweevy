@@ -33,19 +33,24 @@ export async function fetchContactInfo(userId: string): Promise<ContactField[] |
   return null;
 }
 
-export async function setContactInfo(userId: string, fields: ContactField[]) {
+export async function setContactInfo(userId: string, fields: ContactField[]): Promise<ContactField[] | null> {
   const supabase = await createClient();
   
-  let { error } = await supabase.from('contactinfo').upsert({
-    user: userId,
-    fields: fields
-  });
+  let { data, error } = await supabase
+    .from('contactinfo')
+    .update({ fields: fields })
+    .eq('user', userId)
+    .select()
 
   if (error) {
     console.error('Error setting contact info:', error);
     return null;
   }
 
-  revalidatePath('/protected');
-  return true;
+  if (data) {
+    // [{label: 'City', value: 'Portland, OR', position: 4}]
+    return data.fields;
+  }
+
+  return null;
 }

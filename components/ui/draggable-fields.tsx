@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { GripVertical, X } from 'lucide-react';
+import { useState } from 'react';
+import { GripVertical, X, Plus } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
-// props types are validated in earlier components
 export default function DraggableFields(props) {
-  const [fields, setFields] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
+
+  const { fields, handleSetFields } = props;
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedItem(index);
@@ -15,16 +16,22 @@ export default function DraggableFields(props) {
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
-    
+
     if (draggedItem === null || draggedItem === index) return;
 
     const newFields = [...fields];
     const draggedField = newFields[draggedItem];
-    
+
     newFields.splice(draggedItem, 1);
     newFields.splice(index, 0, draggedField);
-    
-    setFields(newFields);
+
+    // Update positions to match new order
+    const fieldsWithUpdatedPositions = newFields.map((field, idx) => ({
+      ...field,
+      position: idx
+    }));
+
+    handleSetFields(fieldsWithUpdatedPositions);
     setDraggedItem(index);
   };
 
@@ -32,17 +39,15 @@ export default function DraggableFields(props) {
     setDraggedItem(null);
   };
 
+  const addField = () => {
+    const newFields = [...fields];
+    newFields.push({label: '', value: '', position: fields.length});
+    handleSetFields(newFields);
+  }
+
   const removeField = (position: number) => {
-    setFields(fields.filter(field => field.position !== position));
+    handleSetFields(fields.filter(field => field.position !== position));
   };
-
-  useEffect(() => {
-    console.log(props.fields);
-
-    if (props.fields) {
-      setFields(props.fields.sort((a, b) => a.position - b.position));
-    }
-  }, [props.fields]);
 
   return (
     <div className="space-y-2">
@@ -67,6 +72,8 @@ export default function DraggableFields(props) {
                 type="checkbox" 
                 id={`include${field.position}`} 
                 name={`include${field.position}`}
+                aria-label="Include field in download"
+                checked
               />
               <input
                 type="text"
@@ -75,7 +82,7 @@ export default function DraggableFields(props) {
                 onChange={(e) => {
                   const newFields = [...fields];
                   newFields[index].value = e.target.value;
-                  setFields(newFields);
+                  handleSetFields(newFields);
                 }}
                 className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -91,6 +98,7 @@ export default function DraggableFields(props) {
           </button>
         </div>
       ))}
+      <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new item</Button>
     </div>
   );
 }
