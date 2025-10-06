@@ -46,6 +46,8 @@ export function DownloadButton({ userId, fileType }: DownloadButtonProps): JSX.E
 
       if (fileType === "html") {
         downloadName = "sweevy-resume.html";
+        // since we don't need to transform the html,
+        // we can just use simple strings.
         const html: string[] = ["<html>", "<body>"];
 
         data.contactinfo.forEach(item => {
