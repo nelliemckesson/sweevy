@@ -23,8 +23,7 @@ export default async function ProtectedPage() {
       <div className="w-96">
         <h2 className="text-lg mb-4">Download Your Resumé</h2>
         <div className="flex flex-row gap-4 mb-4">
-          <DownloadButton fileType="DOCX" />
-          <DownloadButton fileType="HTML" />
+          <DownloadButton fileType="html" userId={user.sub} />
         </div>
 
         <h2 className="text-lg mb-4">Guide</h2>

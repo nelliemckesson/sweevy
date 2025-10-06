@@ -33,11 +33,12 @@ export function ContactInfoForm(props) {
     setHasChanges(false);
   }
 
+  // set initial state values from props
   useEffect(() => {
     if (props.fields) {
-      const sortedFields = props.fields.sort((a, b) => a.position - b.position);
-      setFields(sortedFields);
-      setOriginalFields(JSON.parse(JSON.stringify(sortedFields)));
+      setFields(props.fields);
+      // deep clone to avoid mirroring
+      setOriginalFields(JSON.parse(JSON.stringify(props.fields)));
     }
   }, [props.fields]);
 

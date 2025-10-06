@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setSkill, deleteSkill } from "@/app/actions/db";
 
+// TO DO: Make this component more generic and reusable by other sections (?)
 export function SkillsForm(props) {
   // [{label: '', value: 'Photoshop', position: 4}]
   const [fields, setFields] = useState([]);
@@ -18,7 +19,7 @@ export function SkillsForm(props) {
       const removedFields = prev.filter(
         oldField => !newFields.some(newField => newField.value === oldField.value)
       );
-      setRemoved(prev => removedFields);
+      setRemoved(prevRemoved => removedFields);
       return newFields;
     });
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
@@ -34,11 +35,13 @@ export function SkillsForm(props) {
       }
       return newSkill;
     });
+
     // delete any removed fields
     removed.forEach(field => {
       console.log(field);
       handleDeleteField(field);
     });
+
     // adjust frontend data
     setRemoved([]);
     setOriginalFields(cleanedFields);
@@ -59,11 +62,12 @@ export function SkillsForm(props) {
     setHasChanges(false);
   }
 
+  // set initial state values from props
   useEffect(() => {
     if (props.fields) {
-      const sortedFields = props.fields.sort((a, b) => a.position - b.position);
-      setFields(sortedFields);
-      setOriginalFields(JSON.parse(JSON.stringify(sortedFields)));
+      setFields(props.fields);
+      // deep clone to avoid mirroring
+      setOriginalFields(JSON.parse(JSON.stringify(props.fields)));
     }
   }, [props.fields]);
 

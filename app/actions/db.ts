@@ -1,9 +1,6 @@
 'use server';
 
-import { redirect } from "next/navigation";
-
 import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
 
 export interface ContactField {
   label: string;
@@ -12,7 +9,7 @@ export interface ContactField {
   include: boolean;
 }
 
-export interface GenericDatabaseField {
+export interface DatabaseField {
   id: number;
   created_at: string;
   label: string;
@@ -24,8 +21,8 @@ export interface GenericDatabaseField {
 
 export async function fetchContactInfo(userId: string): Promise<ContactField[] | null> {
   const supabase = await createClient();
-  
-  let { data: contactinfo, error } = await supabase
+
+  const { data: contactinfo, error } = await supabase
     .from('contactinfo')
     .select('fields')
     .eq('user', userId)
@@ -36,20 +33,15 @@ export async function fetchContactInfo(userId: string): Promise<ContactField[] |
     return null;
   }
 
-  if (contactinfo) {
-    // [{label: 'City', value: 'Portland, OR', position: 4, include: true}]
-    return contactinfo.fields;
-  }
-
-  return null;
+  return contactinfo?.fields.sort((a, b) => a.position - b.position) ?? null;
 }
 
 export async function setContactInfo(userId: string, fields: ContactField[]): Promise<ContactField[] | null> {
   const supabase = await createClient();
-  
-  let { data, error } = await supabase
+
+  const { data, error } = await supabase
     .from('contactinfo')
-    .update({ fields: fields })
+    .update({ fields })
     .eq('user', userId)
     .select();
 
@@ -58,18 +50,13 @@ export async function setContactInfo(userId: string, fields: ContactField[]): Pr
     return null;
   }
 
-  if (data) {
-    // [{label: 'City', value: 'Portland, OR', position: 4, include: true}]
-    return data.fields;
-  }
-
-  return null;
+  return data?.fields ?? null;
 }
 
 export async function fetchSkills(userId: string): Promise<DatabaseField[] | null> {
   const supabase = await createClient();
-  
-  let { data: skills, error } = await supabase
+
+  const { data: skills, error } = await supabase
     .from('skills')
     .select()
     .eq('user', userId);
@@ -79,34 +66,24 @@ export async function fetchSkills(userId: string): Promise<DatabaseField[] | nul
     return null;
   }
 
-  if (skills) {
-    // [{label: '', value: 'Photoshop', position: 4, include: true, user: uuid}]
-    return skills;
-  }
-
-  return null;
+  return skills?.sort((a, b) => a.position - b.position) ?? null;
 }
 
 export async function setSkill(userId: string, field: ContactField): Promise<DatabaseField | null> {
   const supabase = await createClient();
-  
-  let { data, error } = await supabase
+
+  const { data, error } = await supabase
     .from('skills')
     .upsert({ ...field, user: userId })
-    .select();
+    .select()
+    .single();
 
   if (error) {
     console.error('Error setting skill:', error);
     return null;
   }
 
-  if (data) {
-    // [{label: '', value: 'Photoshop', position: 4, include: true, user: uuid}]
-    console.log(data);
-    return data;
-  }
-
-  return null;
+  return data ?? null;
 }
 
 export async function deleteSkill(userId: string, field: DatabaseField): Promise<boolean> {
@@ -123,4 +100,16 @@ export async function deleteSkill(userId: string, field: DatabaseField): Promise
   }
 
   return false;
+}
+
+export async function fetchAllData(userId: string) {
+  const [contactinfo, skills] = await Promise.all([
+    fetchContactInfo(userId),
+    fetchSkills(userId),
+  ]);
+
+  return {
+    contactinfo,
+    skills
+  };
 }
