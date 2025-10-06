@@ -11,6 +11,7 @@ export function ContactInfoForm({ userId, fields: initialFields }: FormProps): J
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // update the fields with any changes
   const handleSetFields = (newFields: Field[]): void => {
     setFields(newFields);
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));

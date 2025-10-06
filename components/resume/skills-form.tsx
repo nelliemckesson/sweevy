@@ -12,8 +12,10 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // update the fields with any changes
   const handleSetFields = (newFields: Field[]): void => {
     setFields(prev => {
+      // check to see if any fields were removed; flag for deletion if so.
       const removedFields = prev.filter(
         oldField => !newFields.some(newField => newField.value === oldField.value)
       );
