@@ -30,9 +30,9 @@ export function SkillsForm(props) {
       const { changed: _, ...rest } = field;
       if (field.changed) {
         // upsert the changed field
-        setSkill(props.userId, rest);
+        const newSkill = setSkill(props.userId, rest);
       }
-      return rest;
+      return newSkill;
     });
     // delete any removed fields
     removed.forEach(field => {
@@ -46,12 +46,16 @@ export function SkillsForm(props) {
   }
 
   const handleDeleteField = (field) => {
-    const { changed: _, ...rest } = field;
-    deleteSkill(props.userId, rest);
+    // only need to run this if it exists in the db
+    if (field.id) {
+      const { changed: _, ...rest } = field;
+      deleteSkill(props.userId, rest);
+    }
   }
 
   const handleCancel = () => {
     setFields(originalFields);
+    setRemoved([]);
     setHasChanges(false);
   }
 

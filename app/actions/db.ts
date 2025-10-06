@@ -80,7 +80,6 @@ export async function fetchSkills(userId: string): Promise<DatabaseField[] | nul
   }
 
   if (skills) {
-    console.log(skills);
     // [{label: '', value: 'Photoshop', position: 4, include: true, user: uuid}]
     return skills;
   }
@@ -113,8 +112,6 @@ export async function setSkill(userId: string, field: ContactField): Promise<Dat
 export async function deleteSkill(userId: string, field: DatabaseField): Promise<boolean> {
   const supabase = await createClient();
 
-  console.log(field);
-  
   const response = await supabase
     .from('skills')
     .delete()
