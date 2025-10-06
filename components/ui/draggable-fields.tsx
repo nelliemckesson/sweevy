@@ -5,6 +5,7 @@ import { GripVertical, X, Plus } from 'lucide-react';
 import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
+// this type interface is only used once
 interface DraggableFieldsProps {
   fields: Field[];
   handleSetFields: (fields: Field[]) => void;
