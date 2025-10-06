@@ -1,5 +1,5 @@
 import { SkillsForm } from "@/components/resume/skills-form";
-// import { fetchContactInfo } from "@/app/actions/db";
+import { fetchSkills } from "@/app/actions/db";
 
 // --------
 // DESCRIPTION: 
@@ -7,8 +7,7 @@ import { SkillsForm } from "@/components/resume/skills-form";
 // --------
 export async function Skills(props) {
   // keep data actions server-side
-  // const data = await fetchContactInfo(props.userId, props.supabase);
-  const data = [];
+  const data = await fetchSkills(props.userId, props.supabase);
 
   // editable form needs client, thus will be a subcomponent
   return (

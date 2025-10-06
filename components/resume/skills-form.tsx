@@ -3,29 +3,51 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
-import { setContactInfo } from "@/app/actions/db";
+import { setSkill, deleteSkill } from "@/app/actions/db";
 
 export function SkillsForm(props) {
-  // [{label: 'City', value: 'Portland, OR', position: 4}]
+  // [{label: '', value: 'Photoshop', position: 4}]
   const [fields, setFields] = useState([]);
+  const [removed, setRemoved] = useState([]);
   const [originalFields, setOriginalFields] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleSetFields = (newFields) => {
-    setFields(prev => newFields);
+    setFields(prev => {
+      // check for any removed fields
+      const removedFields = prev.filter(
+        oldField => !newFields.some(newField => newField.value === oldField.value)
+      );
+      setRemoved(prev => removedFields);
+      return newFields;
+    });
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
   }
 
   const handleSave = async () => {
+    // update any changed fields
     const cleanedFields = fields.map(field => {
+      const { changed: _, ...rest } = field;
       if (field.changed) {
         // upsert the changed field
+        setSkill(props.userId, rest);
       }
-      const { changed: _, ...rest } = field;
       return rest;
     });
+    // delete any removed fields
+    removed.forEach(field => {
+      console.log(field);
+      handleDeleteField(field);
+    });
+    // adjust frontend data
+    setRemoved([]);
     setOriginalFields(cleanedFields);
     setHasChanges(false);
+  }
+
+  const handleDeleteField = (field) => {
+    const { changed: _, ...rest } = field;
+    deleteSkill(props.userId, rest);
   }
 
   const handleCancel = () => {
