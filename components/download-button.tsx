@@ -1,24 +1,34 @@
 "use client";
 
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { fetchAllData } from "@/app/actions/db";
 
-export function DownloadButton(props) {
+// these type interfaces are only used once
+interface ResumeData {
+  contactinfo: Field[];
+  skills: Field[];
+}
 
-  const handleDownload = async () => {
-    let html, blob;
-    // get all resume data
-    const data = await fetchAllData(props.userId);
-    console.log(data);
+interface DownloadButtonProps {
+  userId: string;
+  fileType: "html" | "docx";
+}
 
-    let downloadName = "sweevy-resume.html";
+export function DownloadButton({ userId, fileType }: DownloadButtonProps): JSX.Element {
+  const handleDownload = async (): Promise<void> => {
+    try {
+      const data = await fetchAllData(userId) as ResumeData | null;
 
-    if (data) {
+      if (!data) return;
+
+      let blob: Blob;
+      let downloadName: string;
+
       // TO DO: Get docx export working
-      // if (props.fileType === "docx") {
+      // if (fileType === "docx") {
       //   downloadName = "sweevy-resume.docx";
-      //   // create the .docx document
       //   const doc = new Document({
       //     sections: [{
       //       properties: {},
@@ -31,30 +41,34 @@ export function DownloadButton(props) {
       //       ],
       //     }],
       //   });
-      //   const blob = await Packer.toBlob(doc);
+      //   blob = await Packer.toBlob(doc);
       // } else
 
-      // we don't need to do any transforms on the HTML,
-      // so we can just create strings instead of a dom
-      if (props.fileType === "html") {
-        html = ["<html>", "<body>"];
-        data.contactInfo.map(item => {
+      if (fileType === "html") {
+        downloadName = "sweevy-resume.html";
+        const html: string[] = ["<html>", "<body>"];
+
+        data.contactinfo.forEach(item => {
           if (item.label === "Name") {
             html.push(`<h1>${item.value}</h1>`);
           } else {
-            html.push(`<p className="contact">${item.value}</p>`);
+            html.push(`<p class="contact">${item.value}</p>`);
           }
         });
-        html.push(`<h2>Skills</h2>`);
-        data.skills.map(item => {
-          html.push(`<p className="skills">${item.value}</p>`);
+
+        html.push("<h2>Skills</h2>");
+
+        data.skills.forEach(item => {
+          html.push(`<p class="skills">${item.value}</p>`);
         });
-        html.push(`</body>`);
-        html.push(`</html>`);
-        blob = new Blob(html);
+
+        html.push("</body>", "</html>");
+        blob = new Blob(html, { type: "text/html" });
+      } else {
+        return; // unsupported file type
       }
 
-      // create a download link and trigger it
+      // create download link and trigger it
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -63,10 +77,14 @@ export function DownloadButton(props) {
 
       // clean up
       URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
     }
   };
 
   return (
-    <Button variant="secondary" onClick={handleDownload}>{props.fileType}</Button>
+    <Button variant="secondary" onClick={handleDownload}>
+      {fileType}
+    </Button>
   );
 }

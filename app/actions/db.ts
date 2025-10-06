@@ -1,25 +1,9 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { Field } from "@/lib/types";
 
-export interface ContactField {
-  label: string;
-  value: string;
-  position: number;
-  include: boolean;
-}
-
-export interface DatabaseField {
-  id: number;
-  created_at: string;
-  label: string;
-  value: string;
-  position: number;
-  include: boolean;
-  user: string;
-}
-
-export async function fetchContactInfo(userId: string): Promise<ContactField[] | null> {
+export async function fetchContactInfo(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 
   const { data: contactinfo, error } = await supabase
@@ -36,7 +20,7 @@ export async function fetchContactInfo(userId: string): Promise<ContactField[] |
   return contactinfo?.fields.sort((a, b) => a.position - b.position) ?? null;
 }
 
-export async function setContactInfo(userId: string, fields: ContactField[]): Promise<ContactField[] | null> {
+export async function setContactInfo(userId: string, fields: Field[]): Promise<Field[] | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -53,7 +37,7 @@ export async function setContactInfo(userId: string, fields: ContactField[]): Pr
   return data?.fields ?? null;
 }
 
-export async function fetchSkills(userId: string): Promise<DatabaseField[] | null> {
+export async function fetchSkills(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 
   const { data: skills, error } = await supabase
@@ -69,7 +53,7 @@ export async function fetchSkills(userId: string): Promise<DatabaseField[] | nul
   return skills?.sort((a, b) => a.position - b.position) ?? null;
 }
 
-export async function setSkill(userId: string, field: ContactField): Promise<DatabaseField | null> {
+export async function setSkill(userId: string, field: Field): Promise<Field | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -86,7 +70,7 @@ export async function setSkill(userId: string, field: ContactField): Promise<Dat
   return data ?? null;
 }
 
-export async function deleteSkill(userId: string, field: DatabaseField): Promise<boolean> {
+export async function deleteSkill(userId: string, field: Field): Promise<boolean> {
   const supabase = await createClient();
 
   const response = await supabase

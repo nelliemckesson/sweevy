@@ -1,20 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { GripVertical, X, Plus } from 'lucide-react';
+import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
-export function DraggableFields(props) {
-  const [draggedItem, setDraggedItem] = useState(null);
+interface DraggableFieldsProps {
+  fields: Field[];
+  handleSetFields: (fields: Field[]) => void;
+}
 
-  const { fields, handleSetFields } = props;
+export function DraggableFields({ fields, handleSetFields }: DraggableFieldsProps): JSX.Element {
+  const [draggedItem, setDraggedItem] = useState<number | null>(null);
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     setDraggedItem(index);
     e.dataTransfer.effectAllowed = 'move';
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     e.preventDefault();
 
     if (draggedItem === null || draggedItem === index) return;
@@ -33,19 +37,24 @@ export function DraggableFields(props) {
 
     handleSetFields(fieldsWithUpdatedPositions);
     setDraggedItem(index);
-  };
+  }, [draggedItem, fields, handleSetFields]);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback((): void => {
     setDraggedItem(null);
-  };
+  }, []);
 
-  const addField = () => {
-    const newFields = [...fields];
-    newFields.push({label: '', value: '', position: fields.length, changed: true, include: true});
-    handleSetFields(newFields);
-  }
+  const addField = useCallback((): void => {
+    const newField: Field = {
+      label: '',
+      value: '',
+      position: fields.length,
+      changed: true,
+      include: true
+    };
+    handleSetFields([...fields, newField]);
+  }, [fields, handleSetFields]);
 
-  const removeField = (position: number) => {
+  const removeField = useCallback((position: number): void => {
     // fields are already sorted when they are passed here
     const newFields = fields
       .filter(field => field.position !== position)
@@ -54,7 +63,13 @@ export function DraggableFields(props) {
         position: idx
       }));
     handleSetFields(newFields);
-  };
+  }, [fields, handleSetFields]);
+
+  const updateField = useCallback((index: number, updates: Partial<Field>): void => {
+    const newFields = [...fields];
+    newFields[index] = { ...newFields[index], ...updates, changed: true };
+    handleSetFields(newFields);
+  }, [fields, handleSetFields]);
 
   return (
     <div className="space-y-2">
@@ -81,22 +96,16 @@ export function DraggableFields(props) {
                 name={`include${field.position}`}
                 aria-label="Include field in download"
                 checked={field.include}
-                onChange={(e) => {
-                  const newFields = [...fields];
-                  newFields[index].include = e.target.checked;
-                  newFields[index].changed = true;
-                  handleSetFields(newFields);
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  updateField(index, { include: e.target.checked });
                 }}
               />
               <input
                 type="text"
                 value={field.value}
                 placeholder={field.label || "Type some text..."}
-                onChange={(e) => {
-                  const newFields = [...fields];
-                  newFields[index].value = e.target.value;
-                  newFields[index].changed = true;
-                  handleSetFields(newFields);
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  updateField(index, { value: e.target.value });
                 }}
                 className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

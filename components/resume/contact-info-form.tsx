@@ -1,46 +1,39 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Field, FormProps } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setContactInfo } from "@/app/actions/db";
 
-export function ContactInfoForm(props) {
-  // [{label: 'City', value: 'Portland, OR', position: 4}]
-  const [fields, setFields] = useState([]);
-  const [originalFields, setOriginalFields] = useState([]);
+export function ContactInfoForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+  const [fields, setFields] = useState<Field[]>([]);
+  const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleSetFields = (newFields) => {
-    setFields(prev => newFields);
+  const handleSetFields = (newFields: Field[]): void => {
+    setFields(newFields);
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
-  }
+  };
 
-  const handleSave = async () => {
-    // other tables use the "changed" prop for upserting rows,
-    // but contactinfo is set up slightly differently
-    const cleanedFields = fields.map(field => {
-      const { changed: _, ...rest } = field;
-      return rest;
-    });
-    let newFields = await setContactInfo(props.userId, cleanedFields);
-    setOriginalFields(fields);
+  const handleSave = async (): Promise<void> => {
+    const cleanedFields = fields.map(({ changed, ...rest }) => rest);
+    const updatedFields = await setContactInfo(userId, cleanedFields);
+    setOriginalFields(updatedFields);
     setHasChanges(false);
-  }
+  };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setFields(originalFields);
     setHasChanges(false);
-  }
+  };
 
-  // set initial state values from props
   useEffect(() => {
-    if (props.fields) {
-      setFields(props.fields);
-      // deep clone to avoid mirroring
-      setOriginalFields(JSON.parse(JSON.stringify(props.fields)));
+    if (initialFields) {
+      setFields(initialFields);
+      setOriginalFields(structuredClone(initialFields));
     }
-  }, [props.fields]);
+  }, [initialFields]);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-4">

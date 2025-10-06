@@ -1,75 +1,67 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Field, FormProps } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setSkill, deleteSkill } from "@/app/actions/db";
 
-// TO DO: Make this component more generic and reusable by other sections (?)
-export function SkillsForm(props) {
-  // [{label: '', value: 'Photoshop', position: 4}]
-  const [fields, setFields] = useState([]);
-  const [removed, setRemoved] = useState([]);
-  const [originalFields, setOriginalFields] = useState([]);
+export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+  const [fields, setFields] = useState<Field[]>([]);
+  const [removed, setRemoved] = useState<Field[]>([]);
+  const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleSetFields = (newFields) => {
+  const handleSetFields = (newFields: Field[]): void => {
     setFields(prev => {
-      // check for any removed fields
       const removedFields = prev.filter(
         oldField => !newFields.some(newField => newField.value === oldField.value)
       );
-      setRemoved(prevRemoved => removedFields);
+      setRemoved(removedFields);
       return newFields;
     });
     setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
-  }
+  };
 
-  const handleSave = async () => {
-    // update any changed fields
-    const cleanedFields = fields.map(field => {
-      const { changed: _, ...rest } = field;
-      if (field.changed) {
-        // upsert the changed field
-        const newSkill = setSkill(props.userId, rest);
-      }
-      return newSkill;
-    });
+  const handleSave = async (): Promise<void> => {
+    const updatePromises = fields
+      .filter(field => field.changed)
+      .map(field => {
+        const { changed, ...rest } = field;
+        return setSkill(userId, rest);
+      });
+
+    await Promise.all(updatePromises);
 
     // delete any removed fields
-    removed.forEach(field => {
-      console.log(field);
-      handleDeleteField(field);
-    });
+    const deletePromises = removed
+      .filter(field => field.id !== undefined)
+      .map(field => {
+        const { changed, ...rest } = field;
+        return deleteSkill(userId, rest);
+      });
 
-    // adjust frontend data
+    await Promise.all(deletePromises);
+
+    // adjust frontend state
+    const cleanedFields = fields.map(({ changed, ...rest }) => rest as Field);
     setRemoved([]);
     setOriginalFields(cleanedFields);
     setHasChanges(false);
-  }
+  };
 
-  const handleDeleteField = (field) => {
-    // only need to run this if it exists in the db
-    if (field.id) {
-      const { changed: _, ...rest } = field;
-      deleteSkill(props.userId, rest);
-    }
-  }
-
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setFields(originalFields);
     setRemoved([]);
     setHasChanges(false);
-  }
+  };
 
-  // set initial state values from props
   useEffect(() => {
-    if (props.fields) {
-      setFields(props.fields);
-      // deep clone to avoid mirroring
-      setOriginalFields(JSON.parse(JSON.stringify(props.fields)));
+    if (initialFields) {
+      setFields(initialFields);
+      setOriginalFields(structuredClone(initialFields));
     }
-  }, [props.fields]);
+  }, [initialFields]);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-4">
