@@ -7,24 +7,29 @@ export function DownloadButton(props) {
   const handleDownload = async () => {
     let downloadName = "sweevy-resume.html";
 
-    if (props.fileType === "docx") {
-      downloadName = "sweevy-resume.docx";
-      // create the .docx document
-      const doc = new Document({
-        sections: [{
-          properties: {},
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun("This is placeholder text for your resume."),
-              ],
-            }),
-          ],
-        }],
-      });
+    // TO DO: Get docx export working
+    // if (props.fileType === "docx") {
+    //   downloadName = "sweevy-resume.docx";
+    //   // create the .docx document
+    //   const doc = new Document({
+    //     sections: [{
+    //       properties: {},
+    //       children: [
+    //         new Paragraph({
+    //           children: [
+    //             new TextRun("This is placeholder text for your resume."),
+    //           ],
+    //         }),
+    //       ],
+    //     }],
+    //   });
+    //   const blob = await Packer.toBlob(doc);
+    // }
+    if (props.fileType === "html") {
+      console.log("download HTML");
     }
 
-    const blob = await Packer.toBlob(doc);
+    const blob = await Packer.toBlob("");
 
     // create a download link and trigger it
     const url = URL.createObjectURL(blob);
