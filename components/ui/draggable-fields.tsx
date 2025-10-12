@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 // this type interface is only used once
 interface DraggableFieldsProps {
   fields: Field[];
-  handleSetFields: (fields: Field[]) => void;
+  handleSetFields: (fields: Field[], immediate?: boolean) => void;
 }
 
-export function DraggableFields({ fields, handleSetFields }: DraggableFieldsProps): JSX.Element {
+export function DraggableFields({ fields, handleSetFields, handleAddField }: DraggableFieldsProps): JSX.Element {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
@@ -52,7 +52,7 @@ export function DraggableFields({ fields, handleSetFields }: DraggableFieldsProp
       changed: true,
       include: true
     };
-    handleSetFields([...fields, newField]);
+    handleAddField([...fields, newField]);
   }, [fields, handleSetFields]);
 
   const removeField = useCallback((position: number): void => {
@@ -66,10 +66,10 @@ export function DraggableFields({ fields, handleSetFields }: DraggableFieldsProp
     handleSetFields(newFields);
   }, [fields, handleSetFields]);
 
-  const updateField = useCallback((index: number, updates: Partial<Field>): void => {
+  const updateField = useCallback((index: number, updates: Partial<Field>, immediate = false): void => {
     const newFields = [...fields];
     newFields[index] = { ...newFields[index], ...updates, changed: true };
-    handleSetFields(newFields);
+    handleSetFields(newFields, immediate);
   }, [fields, handleSetFields]);
 
   return (
@@ -98,7 +98,7 @@ export function DraggableFields({ fields, handleSetFields }: DraggableFieldsProp
                 aria-label="Include field in download"
                 checked={field.include}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  updateField(index, { include: e.target.checked });
+                  updateField(index, { include: e.target.checked }, true);
                 }}
               />
               <input
