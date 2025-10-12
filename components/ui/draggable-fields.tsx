@@ -55,15 +55,15 @@ export function DraggableFields({ fields, handleSetFields, handleAddField }: Dra
     handleAddField([...fields, newField]);
   }, [fields, handleSetFields]);
 
-  const removeField = useCallback((position: number): void => {
-    // fields are already sorted when they are passed here
+  const removeField = useCallback((index: number): void => {
+    // remove field by array index
     const newFields = fields
-      .filter(field => field.position !== position)
+      .filter((_, idx) => idx !== index)
       .map((field, idx) => ({
         ...field,
         position: idx
       }));
-    handleSetFields(newFields);
+    handleSetFields(newFields, true);
   }, [fields, handleSetFields]);
 
   const updateField = useCallback((index: number, updates: Partial<Field>, immediate = false): void => {
@@ -76,7 +76,7 @@ export function DraggableFields({ fields, handleSetFields, handleAddField }: Dra
     <div className="space-y-2">
       {fields.map((field, index) => (
         <div
-          key={field.position}
+          key={field.id ?? `temp-${index}`}
           draggable
           onDragStart={(e) => handleDragStart(e, index)}
           onDragOver={(e) => handleDragOver(e, index)}
@@ -114,7 +114,7 @@ export function DraggableFields({ fields, handleSetFields, handleAddField }: Dra
           </div>
           
           <button
-            onClick={() => removeField(field.position)}
+            onClick={() => removeField(index)}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
             aria-label="Remove field"
           >
