@@ -115,7 +115,8 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
   }, []);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-4">
+    <div className="flex-1 w-full flex flex-col gap-0">
+      <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
       <DraggableFields fields={fields} handleSetFields={handleSetFields} handleAddField={handleAddField} />
     </div>
   );

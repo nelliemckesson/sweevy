@@ -12,7 +12,7 @@ export async function Skills({ userId }: ResumeSectionProps): Promise<JSX.Elemen
   const data = await fetchSkills(userId, supabase);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-3">
+    <div className="flex-1 w-full flex flex-col gap-0">
       <h2 className="text-xl">Skills</h2>
       <SkillsForm fields={data || []} userId={userId} />
     </div>
