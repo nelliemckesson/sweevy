@@ -5,6 +5,9 @@ export interface Field {
   value: string;
   position: number;
   include: boolean;
+  fields?: Field[];
+  children?: Field[];
+  parent?: number;
   user?: string;
 }
 

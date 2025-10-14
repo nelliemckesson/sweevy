@@ -126,13 +126,13 @@ export function DraggableFields({ fields, newText, handleSetFields, handleAddFie
           </div>
           {field.hasOwnProperty("fields") && (
             <div className="ml-12">
-              <DraggableFields fields={field.fields} handleSetFields={handleSetFields} handleAddField={handleAddField} />
+              <DraggableFields fields={field.fields} newText="custom item" handleSetFields={handleSetFields} handleAddField={handleAddField} />
             </div>
           )}
 
-          {field.children && (
+          {field.hasOwnProperty("children") && (
             <div className="ml-12">
-              <DraggableFields fields={field.children} handleSetFields={handleSetFields} handleAddField={handleAddField} />
+              <DraggableFields fields={field.children} newText={`${newText} item`} handleSetFields={handleSetFields} handleAddField={handleAddField} />
             </div>
           )}
         </div>
