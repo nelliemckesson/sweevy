@@ -120,6 +120,13 @@ export function DraggableFields({ fields, handleSetFields, handleAddField }: Dra
           >
             <X size={18} />
           </button>
+
+          {field.children && (
+            <div>
+              {field.children}
+            </div>
+          )}
+          
         </div>
       ))}
       <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new item</Button>

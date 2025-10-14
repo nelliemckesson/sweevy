@@ -86,6 +86,57 @@ export async function deleteSkill(userId: string, field: Field): Promise<boolean
   return false;
 }
 
+export async function fetchRoles(userId: string): Promise<Field[] | null> {
+  const supabase = await createClient();
+
+  const { data: roles, error } = await supabase
+    .from('roles')
+    .select()
+    .eq('user', userId);
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching roles:', error);
+    return null;
+  }
+
+  return roles?.sort((a, b) => a.position - b.position) ?? null;
+}
+
+export async function setRole(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('roles')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting roles:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteRole(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('roles')
+    .delete()
+    .eq('id', field.id);
+
+  // also delete all role items
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
 export async function fetchAllData(userId: string) {
   const [contactinfo, skills] = await Promise.all([
     fetchContactInfo(userId),

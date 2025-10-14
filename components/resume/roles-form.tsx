@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
-import { setSkill, deleteSkill } from "@/app/actions/db";
+import { setRole, deleteRole } from "@/app/actions/db";
 
-export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
@@ -48,7 +48,7 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
         .map(field => {
           const { changed, ...rest } = field;
           console.log(rest);
-          return setSkill(userId, rest);
+          return setRole(userId, rest);
         });
 
       const savedFields = await Promise.all(updatePromises);
@@ -60,7 +60,7 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
         .filter(field => field.id !== undefined)
         .map(field => {
           const { changed, ...rest } = field;
-          return deleteSkill(userId, rest);
+          return deleteRole(userId, rest);
         });
 
       await Promise.all(deletePromises);
