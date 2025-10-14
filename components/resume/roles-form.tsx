@@ -7,6 +7,7 @@ import { setRole, deleteRole } from "@/app/actions/db";
 
 export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
+  const [subFields, setSubFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [pendingSaveType, setPendingSaveType] = useState<'immediate' | 'debounced' | null>(null);
