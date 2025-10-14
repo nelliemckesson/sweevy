@@ -21,6 +21,8 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
     // no save for the new empty field
   };
 
+  // TO DO: Handle saving the custom fields for a role
+
   // update the fields with any changes
   const handleSetFields = (newFields: Field[], immediate = false): void => {
     setFields(prev => {
@@ -35,6 +37,8 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
     // mark that we need to save after state updates
     setPendingSaveType(immediate ? 'immediate' : 'debounced');
   };
+
+  // TO DO: Handle saving the custom fields for a role
 
   const handleSave = useCallback(async (): Promise<void> => {
     if (isSavingRef.current) return;
@@ -136,7 +140,7 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
   return (
     <div className="flex-1 w-full flex flex-col gap-0">
       <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
-      <DraggableFields fields={fields} handleSetFields={handleSetFields} handleAddField={handleAddField} />
+      <DraggableFields fields={fields} newText="role" handleSetFields={handleSetFields} handleAddField={handleAddField} />
     </div>
   );
 }

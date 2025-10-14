@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 // this type interface is only used once
 interface DraggableFieldsProps {
   fields: Field[];
+  newText: string;
   handleSetFields: (fields: Field[], immediate?: boolean) => void;
+  handleAddField: (newFields: Field[]) => void;
 }
 
-export function DraggableFields({ fields, handleSetFields, handleAddField }: DraggableFieldsProps): JSX.Element {
+export function DraggableFields({ fields, newText, handleSetFields, handleAddField }: DraggableFieldsProps): JSX.Element {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
@@ -135,7 +137,7 @@ export function DraggableFields({ fields, handleSetFields, handleAddField }: Dra
           )}
         </div>
       ))}
-      <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new item</Button>
+      <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new {newText || "item"}</Button>
     </div>
   );
 }

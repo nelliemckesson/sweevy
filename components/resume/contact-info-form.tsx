@@ -38,7 +38,7 @@ export function ContactInfoForm({ userId, fields: initialFields }: FormProps): J
 
   return (
     <div className="flex-1 w-full flex flex-col gap-4">
-      <DraggableFields fields={fields} handleSetFields={handleSetFields} handleAddField={handleSetFields} />
+      <DraggableFields fields={fields} newtext="contact info item" handleSetFields={handleSetFields} handleAddField={handleSetFields} />
       {hasChanges && (
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleSave}>Save</Button>
