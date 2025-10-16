@@ -97,7 +97,8 @@ export async function fetchRoles(userId: string): Promise<Field[] | null> {
         id, 
         value,
         include,
-        position
+        position,
+        parent
       )
     `)
     .eq('user', userId);
@@ -132,6 +133,41 @@ export async function deleteRole(userId: string, field: Field): Promise<boolean>
 
   const response = await supabase
     .from('roles')
+    .delete()
+    .eq('id', field.id);
+
+  // also delete all role items
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
+export async function setRoleItem(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('roleitems')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting roles:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteRoleItem(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('roleitems')
     .delete()
     .eq('id', field.id);
 

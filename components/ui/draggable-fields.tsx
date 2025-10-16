@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 interface DraggableFieldsProps {
   fields: Field[];
   newText: string;
+  parent?: number;
   handleSetFields: (fields: Field[], immediate?: boolean) => void;
   handleAddField: (newFields: Field[]) => void;
+  renderNestedFields?: (field: Field) => React.ReactNode;
 }
 
-export function DraggableFields({ fields, newText, handleSetFields, handleAddField }: DraggableFieldsProps): JSX.Element {
+export function DraggableFields({ fields, newText, parent, handleSetFields, handleAddField, renderNestedFields }: DraggableFieldsProps): JSX.Element {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
@@ -50,10 +52,14 @@ export function DraggableFields({ fields, newText, handleSetFields, handleAddFie
     const newField: Field = {
       label: '',
       value: '',
-      position: fields.length,
+      position: fields.length+1,
       changed: true,
       include: true
     };
+    if (parent) {
+      console.log("has parent");
+      newField.parent = parent;
+    }
     handleAddField([...fields, newField]);
   }, [fields, handleSetFields]);
 
@@ -124,20 +130,22 @@ export function DraggableFields({ fields, newText, handleSetFields, handleAddFie
               <X size={18} />
             </button>
           </div>
-          {field.hasOwnProperty("fields") && (
-            <div className="ml-12">
-              <DraggableFields fields={field.fields} newText="custom item" handleSetFields={handleSetFields} handleAddField={handleAddField} />
-            </div>
-          )}
-
-          {field.hasOwnProperty("children") && (
-            <div className="ml-12">
-              <DraggableFields fields={field.children} newText={`${newText} item`} handleSetFields={handleSetFields} handleAddField={handleAddField} />
-            </div>
-          )}
+          {renderNestedFields && renderNestedFields(field)}
         </div>
       ))}
       <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new {newText || "item"}</Button>
     </div>
   );
 }
+
+// {field.hasOwnProperty("fields") && (
+//             <div className="ml-12">
+//               <DraggableFields fields={field.fields} newText="custom item" handleSetFields={handleSetFields} handleAddField={handleAddField} parent={field.id} />
+//             </div>
+//           )}
+
+//           {field.hasOwnProperty("children") && (
+//             <div className="ml-12">
+//               <DraggableFields fields={field.children} newText={`${newText} item`} handleSetFields={handleSetFields} handleAddField={handleAddField} parent={field.id} />
+//             </div>
+//           )}

@@ -7,8 +7,10 @@ export interface Field {
   include: boolean;
   fields?: Field[];
   children?: Field[];
+  roleitems?: Field[];
   parent?: number;
   user?: string;
+  changed?: boolean;
 }
 
 export interface ResumeSectionProps {
@@ -18,4 +20,5 @@ export interface ResumeSectionProps {
 export interface FormProps {
   userId: string;
   fields: Field[];
+  parent?: number;
 }

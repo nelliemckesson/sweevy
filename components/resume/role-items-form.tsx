@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
-import { RoleItemsForm } from "@/components/resume/role-items-form";
-import { setRole, deleteRole } from "@/app/actions/db";
+import { setRoleItem, deleteRoleItem } from "@/app/actions/db";
 
-export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+export function RoleItemsForm({ userId, fields: initialFields, parent }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [subFields, setSubFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
@@ -37,8 +36,6 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
     setPendingSaveType(immediate ? 'immediate' : 'debounced');
   };
 
-  // TO DO: Handle saving the custom fields for a role
-
   const handleSave = useCallback(async (): Promise<void> => {
     if (isSavingRef.current) return;
 
@@ -50,9 +47,9 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
       const updatePromises = fields
         .filter(field => field.changed)
         .map(field => {
-          const { changed, roleitems, ...rest } = field;
+          const { changed, ...rest } = field;
           console.log(rest);
-          return setRole(userId, rest);
+          return setRoleItem(userId, rest);
         });
 
       const savedFields = await Promise.all(updatePromises);
@@ -64,7 +61,7 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
         .filter(field => field.id !== undefined)
         .map(field => {
           const { changed, ...rest } = field;
-          return deleteRole(userId, rest);
+          return deleteRoleItem(userId, rest);
         });
 
       await Promise.all(deletePromises);
@@ -138,27 +135,15 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
   }, []);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-0">
+    <div className="flex-1 w-full flex flex-col gap-0 mt-4">
+      <h3>Responsibilities</h3>
       <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
-      <DraggableFields
-        fields={fields}
-        newText="role"
-        handleSetFields={handleSetFields}
-        handleAddField={handleAddField}
-        renderNestedFields={(field) => {
-          if (field.roleitems && field.id) {
-            return (
-              <div className="ml-12 mt-2">
-                <RoleItemsForm
-                  fields={field.roleitems}
-                  userId={userId}
-                  parent={field.id}
-                />
-              </div>
-            );
-          }
-          return null;
-        }}
+      <DraggableFields 
+        fields={fields} 
+        newText="responsibility" 
+        handleSetFields={handleSetFields} 
+        handleAddField={handleAddField} 
+        parent={parent} 
       />
     </div>
   );
