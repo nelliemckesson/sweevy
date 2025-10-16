@@ -8,7 +8,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen flex flex-col items-center">
+    <main className="min-h-screen flex flex-col items-center bg-neutral-50">
       <div className="flex-1 w-full flex flex-col gap-10 items-center">
 
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">

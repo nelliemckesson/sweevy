@@ -12,13 +12,6 @@ export async function Roles({ userId }: ResumeSectionProps): Promise<JSX.Element
   // fetch roles and role items
   const data = await fetchRoles(userId, supabase);
 
-  // reformat data for draggableFields comp
-  // const cleanedData = data.map(role => {
-  //   role.children = role.roleitems;
-  //   return role;
-  // });
-  // console.log(cleanedData);
-
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <h2 className="text-xl">Experience</h2>

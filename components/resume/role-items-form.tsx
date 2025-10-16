@@ -118,7 +118,6 @@ export function RoleItemsForm({ userId, fields: initialFields, parent }: FormPro
 
   useEffect(() => {
     if (initialFields) {
-      console.log(initialFields);
       setFields(initialFields);
       setOriginalFields(structuredClone(initialFields));
       isInitialMount.current = false;
