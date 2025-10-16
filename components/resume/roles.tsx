@@ -9,14 +9,19 @@ import { fetchRoles } from "@/app/actions/db";
 // --------
 export async function Roles({ userId }: ResumeSectionProps): Promise<JSX.Element> {
   const supabase = await createClient();
-  // fetch roles
+  // fetch roles and role items
   const data = await fetchRoles(userId, supabase);
-  // also fetch role items (list of tasks for each job)
+  // reformat data for draggableFields comp
+  const cleanedData = data.map(role => {
+    role.children = role.roleitems;
+    return role;
+  });
+  console.log(cleanedData);
 
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <h2 className="text-xl">Experience</h2>
-      <RolesForm fields={data || []} userId={userId} />
+      <RolesForm fields={cleanedData || []} userId={userId} />
     </div>
   );
 }

@@ -91,7 +91,15 @@ export async function fetchRoles(userId: string): Promise<Field[] | null> {
 
   const { data: roles, error } = await supabase
     .from('roles')
-    .select()
+    .select(`
+      *,
+      roleitems (
+        id, 
+        value,
+        include,
+        position
+      )
+    `)
     .eq('user', userId);
 
   if (error && error.status !== 406) {

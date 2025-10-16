@@ -122,6 +122,7 @@ export function RolesForm({ userId, fields: initialFields }: FormProps): JSX.Ele
 
   useEffect(() => {
     if (initialFields) {
+      console.log(initialFields);
       setFields(initialFields);
       setOriginalFields(structuredClone(initialFields));
       isInitialMount.current = false;

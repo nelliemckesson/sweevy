@@ -77,7 +77,7 @@ export function DraggableFields({ fields, newText, handleSetFields, handleAddFie
   return (
     <div className="space-y-2">
       {fields.map((field, index) => (
-        <div>
+        <div key={index}>
           <div
             key={field.id ?? `temp-${index}`}
             draggable
