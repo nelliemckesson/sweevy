@@ -192,7 +192,7 @@ export async function fetchEducations(userId: string): Promise<Field[] | null> {
     .from('educations')
     .select(`
       *,
-      roleitems (
+      educationitems (
         id, 
         value,
         include,

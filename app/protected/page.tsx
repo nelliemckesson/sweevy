@@ -6,6 +6,7 @@ import { DownloadButton } from "@/components/download-button";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
+import { Educations } from "@/components/resume/educations";
 
 export default async function ProtectedPage() {
   const supabase = await createClient();
@@ -50,6 +51,7 @@ export default async function ProtectedPage() {
           <ContactInfo userId={user.sub} supabase={supabase} />
           <Skills userId={user.sub} supabase={supabase} />
           <Roles userId={user.sub} supabase={supabase} />
+          <Educations userId={user.sub} supabase={supabase} />
         </div>
       </div>
 

@@ -5,23 +5,25 @@ import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 
 // this type interface is only used once
-interface SectionWithSubitemsFormProps {
+interface ParentFormProps {
   fields: Field[];
   userId: string;
   newText: string;
+  childKey: string;
   SubItemsForm: JSX.Element;
   handleSaveItem: (userId: string, field: Field) => Promise<Field | null>;
   handleDeleteItem: (userId: string, field: Field) => Promise<boolean>;
 }
 
-export function SectionWithSubitemsForm({ 
+export function ParentForm({ 
   fields: initialFields, 
   userId, 
   newText, 
+  childKey,
   SubItemsForm,
   handleSaveItem, 
   handleDeleteItem
-}: SectionWithSubitemsFormProps): JSX.Element {
+}: ParentFormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [subFields, setSubFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
@@ -156,15 +158,15 @@ export function SectionWithSubitemsForm({
       <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
       <DraggableFields
         fields={fields}
-        newText="role"
+        newText={newText}
         handleSetFields={handleSetFields}
         handleAddField={handleAddField}
         renderNestedFields={(field) => {
-          if (field.roleitems && field.id) {
+          if (field.hasOwnProperty(childKey) && field.id) {
             return (
               <div className="ml-12 mt-2">
                 <SubItemsForm
-                  fields={field.roleitems}
+                  fields={field[childKey]}
                   userId={userId}
                   parent={field.id}
                 />

@@ -154,7 +154,7 @@ export function ChildForm({
       <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
       <DraggableFields 
         fields={fields} 
-        newText="responsibility" 
+        newText={newText}
         handleSetFields={handleSetFields} 
         handleAddField={handleAddField} 
         parent={parent} 
