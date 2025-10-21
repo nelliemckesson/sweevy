@@ -86,6 +86,8 @@ export async function deleteSkill(userId: string, field: Field): Promise<boolean
   return false;
 }
 
+// ROLES
+
 export async function fetchRoles(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 
@@ -180,6 +182,105 @@ export async function deleteRoleItem(userId: string, field: Field): Promise<bool
 
   return false;
 }
+
+// EDUCATIONS
+
+export async function fetchEducations(userId: string): Promise<Field[] | null> {
+  const supabase = await createClient();
+
+  const { data: roles, error } = await supabase
+    .from('educations')
+    .select(`
+      *,
+      roleitems (
+        id, 
+        value,
+        include,
+        position,
+        parent
+      )
+    `)
+    .eq('user', userId);
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching educations:', error);
+    return null;
+  }
+
+  return roles?.sort((a, b) => a.position - b.position) ?? null;
+}
+
+export async function setEducation(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('educations')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting educations:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteEducation(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('educations')
+    .delete()
+    .eq('id', field.id);
+
+  // also delete all role items
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
+export async function setEducationItem(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('educationitems')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting educationitems:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteEducationItem(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('educationitems')
+    .delete()
+    .eq('id', field.id);
+
+  // also delete all role items
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
+// GLOBAL
 
 export async function fetchAllData(userId: string) {
   const [contactinfo, skills] = await Promise.all([

@@ -5,23 +5,23 @@ import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 
 // this type interface is only used once
-interface SectionWithSubitemsFormProps {
+interface ChildFormProps {
   fields: Field[];
   userId: string;
   newText: string;
-  SubItemsForm: JSX.Element;
   handleSaveItem: (userId: string, field: Field) => Promise<Field | null>;
   handleDeleteItem: (userId: string, field: Field) => Promise<boolean>;
+  parent?: number;
 }
 
-export function SectionWithSubitemsForm({ 
+export function ChildForm({ 
   fields: initialFields, 
   userId, 
   newText, 
-  SubItemsForm,
   handleSaveItem, 
-  handleDeleteItem
-}: SectionWithSubitemsFormProps): JSX.Element {
+  handleDeleteItem, 
+  parent 
+}: ChildFormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [subFields, setSubFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
@@ -52,8 +52,6 @@ export function SectionWithSubitemsForm({
     setPendingSaveType(immediate ? 'immediate' : 'debounced');
   };
 
-  // TO DO: Handle saving any custom fields
-
   const handleSave = useCallback(async (): Promise<void> => {
     if (isSavingRef.current) return;
 
@@ -65,7 +63,7 @@ export function SectionWithSubitemsForm({
       const updatePromises = fields
         .filter(field => field.changed)
         .map(field => {
-          const { changed, roleitems, ...rest } = field;
+          const { changed, ...rest } = field;
           console.log(rest);
           return handleSaveItem(userId, rest);
         });
@@ -152,27 +150,14 @@ export function SectionWithSubitemsForm({
   }, []);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-0">
+    <div className="flex-1 w-full flex flex-col gap-0 mt-0">
       <span className="text-xs h-[16px]">{isSavingRef.current ? "Saving..." : " "}</span>
-      <DraggableFields
-        fields={fields}
-        newText="role"
-        handleSetFields={handleSetFields}
-        handleAddField={handleAddField}
-        renderNestedFields={(field) => {
-          if (field.roleitems && field.id) {
-            return (
-              <div className="ml-12 mt-2">
-                <SubItemsForm
-                  fields={field.roleitems}
-                  userId={userId}
-                  parent={field.id}
-                />
-              </div>
-            );
-          }
-          return null;
-        }}
+      <DraggableFields 
+        fields={fields} 
+        newText="responsibility" 
+        handleSetFields={handleSetFields} 
+        handleAddField={handleAddField} 
+        parent={parent} 
       />
     </div>
   );
