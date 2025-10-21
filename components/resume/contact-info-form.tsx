@@ -1,50 +1,99 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Field, FormProps } from "@/lib/types";
-import { Button } from "@/components/ui/button";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setContactInfo } from "@/app/actions/db";
 
 export function ContactInfoForm({ userId, fields: initialFields }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [pendingSaveType, setPendingSaveType] = useState<'immediate' | 'debounced' | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMount = useRef(true);
 
   // update the fields with any changes
-  const handleSetFields = (newFields: Field[]): void => {
+  const handleAddField = (newFields: Field[]): void => {
+    setFields(prev => newFields);
+    // no save for the new empty field
+  };
+
+  // update the fields with any changes
+  const handleSetFields = (newFields: Field[], immediate = false): void => {
     setFields(newFields);
-    setHasChanges(JSON.stringify(newFields) !== JSON.stringify(originalFields));
+    // mark that we need to save after state updates
+    setPendingSaveType(immediate ? 'immediate' : 'debounced');
   };
 
-  const handleSave = async (): Promise<void> => {
-    const cleanedFields = fields.map(({ changed, ...rest }) => rest);
-    const updatedFields = await setContactInfo(userId, cleanedFields);
-    setOriginalFields(updatedFields);
-    setHasChanges(false);
-  };
+  const handleSave = useCallback(async (): Promise<void> => {
+    if (isSaving) return;
 
-  const handleCancel = (): void => {
-    setFields(originalFields);
-    setHasChanges(false);
-  };
+    console.log("saving");
+
+    setIsSaving(true);
+
+    try {
+      // clean all fields (remove 'changed' property)
+      const cleanedFields = fields.map(({ changed, ...rest }) => rest);
+
+      // save entire fields array at once
+      const savedFields = await setContactInfo(userId, cleanedFields);
+
+      if (savedFields) {
+        setFields(savedFields);
+        setOriginalFields(savedFields);
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  }, [fields, userId, isSaving]);
+
+  // trigger auto-save when fields change
+  useEffect(() => {
+    // skip on initial mount and when there's no pending save
+    if (isInitialMount.current || pendingSaveType === null) {
+      return;
+    }
+
+    // clear any existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // schedule auto-save (immediate for checkbox changes, debounced for text input)
+    if (pendingSaveType === 'immediate') {
+      handleSave();
+      setPendingSaveType(null);
+    } else {
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        handleSave();
+        setPendingSaveType(null);
+      }, 1000); // 1 second debounce for text input
+    }
+  }, [fields, pendingSaveType, handleSave]);
 
   useEffect(() => {
     if (initialFields) {
       setFields(initialFields);
       setOriginalFields(structuredClone(initialFields));
+      isInitialMount.current = false;
     }
   }, [initialFields]);
 
+  // cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="flex-1 w-full flex flex-col gap-4">
-      <DraggableFields fields={fields} newtext="contact info item" handleSetFields={handleSetFields} handleAddField={handleSetFields} />
-      {hasChanges && (
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleSave}>Save</Button>
-          <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-        </div>
-      )}
+    <div className="flex-1 w-full flex flex-col gap-0">
+      <span className="text-xs h-[16px]">{isSaving ? "Saving..." : " "}</span>
+      <DraggableFields fields={fields} newtext="contact info item" handleSetFields={handleSetFields} handleAddField={handleAddField} />
     </div>
   );
 }
