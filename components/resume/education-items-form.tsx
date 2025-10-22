@@ -13,7 +13,7 @@ export function EducationItemsForm({ userId, fields, parent }: FormProps): JSX.E
       <ChildForm
         fields={fields} 
         userId={userId}
-        newText="item" 
+        newText="description item" 
         handleSaveItem={setEducationItem}
         handleDeleteItem={deleteEducationItem}
         parent={parent} 

@@ -3,12 +3,15 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X } from 'lucide-react';
 import { DownloadButton } from "@/components/download-button";
-import { ContactInfo } from "@/components/resume/contact-info";
-import { Skills } from "@/components/resume/skills";
-import { Roles } from "@/components/resume/roles";
-import { Educations } from "@/components/resume/educations";
+import { Resume } from "@/components/resume/resume";
 
-export default async function ProtectedPage() {
+export default async function ProtectedPage({
+  searchParams,
+}: {
+  searchParams: { category?: string };
+}) {
+  const params = await searchParams;
+  const loadedResume = params.resume || 'default';
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getClaims();
@@ -23,12 +26,12 @@ export default async function ProtectedPage() {
     <div className="flex-1 w-full flex flex-row p-5 gap-3">
 
       <div className="w-96">
-        <h2 className="text-lg mb-4">Download Your Resumé</h2>
+        <h2 className="text-lg mb-5">Download Your Resumé</h2>
         <div className="flex flex-row gap-4 mb-4">
           <DownloadButton fileType="html" userId={user.sub} />
         </div>
 
-        <h2 className="text-lg mb-4">Guide</h2>
+        <h2 className="text-lg mb-5">Guide</h2>
         <p className="flex flex-row items-start gap-1 mb-1">
           <GripVertical size={20} /> Hold and drag to change the item order in a section
         </p>
@@ -45,15 +48,7 @@ export default async function ProtectedPage() {
         </p>
       </div>
 
-      <div className="max-w-4xl w-4/5">
-        <h2 className="text-lg mb-4">Update Your Resumé</h2>
-        <div className="w-100 border p-5 bg-white">
-          <ContactInfo userId={user.sub} supabase={supabase} />
-          <Skills userId={user.sub} supabase={supabase} />
-          <Roles userId={user.sub} supabase={supabase} />
-          <Educations userId={user.sub} supabase={supabase} />
-        </div>
-      </div>
+      <Resume userId={user.sub} loadedResume={loadedResume} />
 
     </div>
   );

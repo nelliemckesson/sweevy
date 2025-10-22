@@ -15,6 +15,7 @@ export interface Field {
 
 export interface ResumeSectionProps {
   userId: string;
+  loadedResume?: string;
 }
 
 export interface FormProps {

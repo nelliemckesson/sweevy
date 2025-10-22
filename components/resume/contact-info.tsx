@@ -7,7 +7,7 @@ import { fetchContactInfo } from "@/app/actions/db";
 // DESCRIPTION: 
 // Contact info, that would appear at the top of a resume
 // --------
-export async function ContactInfo({ userId }: ResumeSectionProps): Promise<JSX.Element> {
+export async function ContactInfo({ userId, loadedResume }: ResumeSectionProps): Promise<JSX.Element> {
   const supabase = await createClient();
   const data = await fetchContactInfo(userId, supabase);
 
