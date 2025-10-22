@@ -48,6 +48,7 @@ export function SignUpForm({
         },
       });
       if (error) throw error;
+      // TO DO: create initial "resume" row
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

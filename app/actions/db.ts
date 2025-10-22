@@ -3,6 +3,43 @@
 import { createClient } from '@/lib/supabase/server';
 import { Field } from "@/lib/types";
 
+// RESUMES
+
+export async function fetchResumes(userId: string): Promise<ResumeField[] | null> {
+  const supabase = await createClient();
+
+  const { data: resumes, error } = await supabase
+    .from('resumes')
+    .select()
+    .eq('user', userId);
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching resumes:', error);
+    return null;
+  }
+
+  return resumes?.sort((a, b) => a.name - b.name) ?? null;
+}
+
+export async function setResume(userId: string, fields: object): Promise<ResumeField | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('resumes')
+    .upsert({ ...fields, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting resume:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+// CONTACT
+
 export async function fetchContactInfo(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 
@@ -36,6 +73,8 @@ export async function setContactInfo(userId: string, fields: Field[]): Promise<F
 
   return data?.fields ?? null;
 }
+
+// SKILLS
 
 export async function fetchSkills(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();

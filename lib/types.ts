@@ -13,6 +13,14 @@ export interface Field {
   changed?: boolean;
 }
 
+export interface ResumeField {
+  id?: number;
+  created_at?: string;
+  name: string;
+  fields?: object;
+  user?: string;
+}
+
 export interface ResumeSectionProps {
   userId: string;
   loadedResume?: string;
