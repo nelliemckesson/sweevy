@@ -1,13 +1,15 @@
 import { Suspense } from 'react';
 import { createClient } from "@/lib/supabase/server";
-import { Pin, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TextPopup } from "@/components/ui/text-popup";
+import { PinResumeButton } from "@/components/resume/pin-resume-button";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
 import { Educations } from "@/components/resume/educations";
+import { setResume, fetchResumes } from "@/app/actions/db";
 
 // resume object:
 // name
@@ -30,15 +32,25 @@ export async function Resume({ userId, loadedResume }: ResumeSectionProps): Prom
   const supabase = await createClient();
 
   // preload all resume versions
+  let resumes = await fetchResumes(userId);
+
+  // create initial "default" resume for new users
+  if (!resumes || resumes.length === 0) {
+    let defaultResume = await setResume(userId, { name: "default", fields: {} });
+    resumes = [defaultResume];
+  }
+
+  console.log(resumes);
 
   // Select options = all of a user's saved resume versions
-  const options = ["design", "accessibility"];
+  const options = resumes.map(item => item.name).filter(item => item !== "default");
+
+  // If a pinned resume is loaded, surface an option to save the changes?
 
   const infoText = `Save your current bullet point selections 
-    as a pinned resumé to tailor different versions 
-    for specific jobs or companies -- e.g., "ux designer", 
-    "web developer", etc. You can create multiple pinned 
-    resumés and quickly switch between them.`;
+    as a pinned resumé tailored for a specific job type
+    -- e.g., "ux designer", "web developer", etc. You can 
+    create multiple pinned resumés and quickly switch between them.`;
 
   return (
     <div className="max-w-4xl w-4/5">
@@ -48,7 +60,7 @@ export async function Resume({ userId, loadedResume }: ResumeSectionProps): Prom
           <Suspense fallback={<div>Loading saved resumés...</div>}>
             <Select title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"} defaultValue={"default"} options={options} />
           </Suspense>
-          <Button className="text-sm" variant="ghost"><Pin size={20} />Pin this Resumé</Button>
+          <PinResumeButton />
           <TextPopup content={infoText}>
             <Button className="p-0" variant="ghost"><Info size={20} /></Button>
           </TextPopup>

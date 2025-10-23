@@ -21,6 +21,7 @@ export async function fetchResumes(userId: string): Promise<ResumeField[] | null
   return resumes?.sort((a, b) => a.name - b.name) ?? null;
 }
 
+// default: {name: "default", fields: {}}
 export async function setResume(userId: string, fields: object): Promise<ResumeField | null> {
   const supabase = await createClient();
 
