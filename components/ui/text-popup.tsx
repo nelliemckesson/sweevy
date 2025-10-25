@@ -202,7 +202,7 @@ export function TextPopup({
           ref={popupRef}
           className={cn(
             "fixed z-50 rounded-md border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-md",
-            "animate-in fade-in-0 zoom-in-95",
+            "animate-in fade-in-0 zoom-in-95 max-w-[300px]",
             actualSide === "top" && "slide-in-from-bottom-2",
             actualSide === "bottom" && "slide-in-from-top-2",
             actualSide === "left" && "slide-in-from-right-2",

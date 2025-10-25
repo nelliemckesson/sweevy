@@ -323,13 +323,17 @@ export async function deleteEducationItem(userId: string, field: Field): Promise
 // GLOBAL
 
 export async function fetchAllData(userId: string) {
-  const [contactinfo, skills] = await Promise.all([
+  const [contactinfo, skills, roles, educations] = await Promise.all([
     fetchContactInfo(userId),
     fetchSkills(userId),
+    fetchRoles(userId),
+    fetchEducations(userId)
   ]);
 
   return {
     contactinfo,
-    skills
+    skills,
+    roles, 
+    educations
   };
 }
