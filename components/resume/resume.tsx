@@ -32,7 +32,7 @@ export async function Resume({ userId, loadedResume }: ResumeSectionProps): Prom
       <div className="flex flex-row justify-between items-center mb-2">
         <h2 className="text-lg">Update Your Resumé</h2>
         <Suspense fallback={<div>Loading pinned resumés...</div>}>
-          <PinResumeButton userId={userId} />
+          <PinnedResumes userId={userId} />
         </Suspense>
       </div>
       <div className="w-100 border p-5 bg-white">
