@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { createClient } from "@/lib/supabase/server";
-import { PinResumeButton } from "@/components/resume/pin-resume-button";
+import { PinnedResumes } from "@/components/resume/pin-resume-button";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";

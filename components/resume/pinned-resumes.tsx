@@ -17,7 +17,7 @@ import { fetchAllData, fetchResumes, setResume } from "@/app/actions/db";
 // 	}
 // }
 
-export function PinResumeButton({ userId }: { userId: string }): JSX.Element {
+export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 	const [resumes, setResumes] = useState([]);
 	const [options, setOptions] = useState([]);
 	const [pinning, setPinning] = useState(false);
