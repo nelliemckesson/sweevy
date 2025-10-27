@@ -12,8 +12,6 @@ export async function Roles({ userId, loadedResume }: SubSectionProps): Promise<
   // fetch roles and role items
   const data = await fetchRoles(userId, supabase);
 
-  console.log(loadedResume);
-
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <h2 className="text-xl">Experience</h2>

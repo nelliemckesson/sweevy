@@ -10,11 +10,21 @@ import { fetchAllData, fetchResumes, setResume, refreshData } from "@/app/action
 
 // {
 // 	"contactinfos": {
-// 		2: [],
-// 		5: []
+// 		2: {"position": 0},
+// 		5: {"position": 3}
 // 	},
 // 	"roles": {
-// 		1: [3, 6]
+// 		1: {
+// 			"position": 0,
+// 			"subitems": {
+// 				3: {
+// 					"position": 0
+// 				},
+// 				6: {
+// 					"position": 2
+// 				}
+// 			}
+// 		}
 // 	}
 // }
 
@@ -50,16 +60,18 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     			// contactinfos don't have ids
     			let key = data[k][i]["id"] || data[k][i]["position"];
     			// create the base object to include
-    			pinned[k][key] = [];
+    			pinned[k][key] = {"position": data[k][i]["position"]};
     			// collect ids of included subitems
     			if (k === "roles" || k === "educations") {
     				let subArray = "roleitems";
     				if (k === "educations") {
     					subArray = "educationitems";
     				}
+    				pinned[k][key]["subitems"] = {};
     				for (let j=0; j<data[k][i][subArray].length; j++) {
     					if (data[k][i][subArray][j]["include"]) {
-    						pinned[k][key].push(data[k][i][subArray][j]["id"]);
+    						let subitem = data[k][i][subArray][j];
+    						pinned[k][key]["subitems"][subitem.id] = {"position": subitem.position};
     					}
     				}
     			}

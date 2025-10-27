@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X } from 'lucide-react';
-import { fetchResumeByName } from "@/app/actions/db";
+import { setResume, fetchResumeByName } from "@/app/actions/db";
 import { DownloadButton } from "@/components/download-button";
 import { Resume } from "@/components/resume/resume";
 
@@ -25,7 +25,7 @@ export default async function ProtectedPage({
 
   // populate default resume if it doesn't exist
   if (!defaultResume) {
-    defaultResume = await setResume(userId, { name: "default", fields: {} });
+    defaultResume = await setResume(user.sub, { name: "default", fields: {} });
   }
 
   const params = await searchParams;

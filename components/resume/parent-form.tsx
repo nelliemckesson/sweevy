@@ -138,8 +138,8 @@ export function ParentForm({
 
   useEffect(() => {
     if (initialFields) {
-      setFields(initialFields);
-      setOriginalFields(structuredClone(initialFields));
+      setFields(initialFields.sort((a, b) => a.position - b.position));
+      setOriginalFields(structuredClone(initialFields.sort((a, b) => a.position - b.position)));
       isInitialMount.current = false;
     }
   }, [initialFields]);
