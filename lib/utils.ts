@@ -6,15 +6,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function adjustData(data: Field[], loadedResume: ResumeField) {
-  if (loadedResume.fields.hasOwnProperty("educations")) {
-    let educations = loadedResume.fields.educations;
+export function adjustData(data: Field[], loadedResume: ResumeField, field: string, subField: string) {
+  if (loadedResume.fields.hasOwnProperty(field)) {
+    let fields = loadedResume.fields[field];
     for (let i=0; i<data.length; i++) {
-      if (educations.hasOwnProperty(data[i].id)) {
+      if (fields.hasOwnProperty(data[i].id)) {
         data[i].include = true;
-        for (let j=0; j<data[i].educationitems.length; j++) {
-          let item = data[i].educationitems[j];
-          if (educations[data[i].id.toString()].indexOf(item.id) > -1)  {
+        for (let j=0; j<data[i][subField].length; j++) {
+          let item = data[i][subField][j];
+          if (fields[data[i].id.toString()].indexOf(item.id) > -1)  {
             item.include = true;
           } else {
             item.include = false;
@@ -22,8 +22,8 @@ export function adjustData(data: Field[], loadedResume: ResumeField) {
         }
       } else {
         data[i].include = false;
-        for (let j=0; j<data[i].educationitems.length; j++) {
-          let item = data[i].educationitems[j];
+        for (let j=0; j<data[i][subField].length; j++) {
+          let item = data[i][subField][j];
           item.include = false;
         }
       };

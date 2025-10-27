@@ -38,7 +38,7 @@ export async function Educations({ userId, loadedResume }: SubSectionProps): Pro
 
   // adjust based on loaded resume
   // TO DO: Also save position in pinned resume
-  data = adjustData(data, loadedResume);
+  data = adjustData(data, loadedResume, "educations", "educationitems");
 
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
