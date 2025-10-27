@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Pin, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { TextPopup } from "@/components/ui/text-popup";
-import { fetchAllData, fetchResumes, setResume } from "@/app/actions/db";
+import { fetchAllData, fetchResumes, setResume, refreshData } from "@/app/actions/db";
 
 // {
 // 	"contactinfos": {
@@ -18,6 +19,9 @@ import { fetchAllData, fetchResumes, setResume } from "@/app/actions/db";
 // }
 
 export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
+	const router = useRouter();
+  const searchParams = useSearchParams();
+
 	const [resumes, setResumes] = useState([]);
 	const [options, setOptions] = useState([]);
 	const [pinning, setPinning] = useState(false);
@@ -38,7 +42,6 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 		let pinned = {};
     // fetch all resume data
     const data = await fetchAllData(userId);
-    console.log(data);
     // for each section, collect ids of included items
     for (let k in data) {
     	pinned[k] = {};
@@ -46,7 +49,6 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     		if (data[k][i]["include"]) {
     			// contactinfos don't have ids
     			let key = data[k][i]["id"] || data[k][i]["position"];
-    			console.log(key);
     			// create the base object to include
     			pinned[k][key] = [];
     			// collect ids of included subitems
@@ -64,14 +66,21 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     		}
     	}
     }
-    console.log(pinned);
     // save as new resume
     let newResume = await setResume(userId, {name: name, fields: pinned});
-    setResumes(prev => [...prev, newResume]);
+    // setResumes(prev => [...prev, newResume]);
     // reset state
-    setName("");
     setPinning(false);
+    setName("");
+    refreshData();
     return;
+  }
+
+  const loadPinnedResume = (value: string) => {
+  	const params = new URLSearchParams(searchParams.toString());
+    params.set('resume', value);
+    router.push(`?${params.toString()}`);
+    refreshData();
   }
 
   useEffect(() => {
@@ -82,10 +91,8 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 		  // create initial "default" resume for new users
 		  if (!data || data.length === 0) {
 		    let defaultResume = await setResume(userId, { name: "default", fields: {} });
-		    console.log(defaultResume);
 		    setResumes([defaultResume]);
 		  } else {
-		  	console.log(data);
 		  	setResumes(data);
 		  }
 		}
@@ -95,16 +102,20 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 
   useEffect(() => {
   	if (resumes && resumes.length > 0) {
-  		console.log(resumes);
   		// Select options = all of a user's saved resume versions
-    	const arr = resumes.map(item => item.name).filter(item => item !== "default");
+    	const arr = resumes.filter(item => item.name !== "default").map(item => [item.id, item.name]);
     	setOptions(arr);
     }
   }, [resumes]);
 
   return (
     <div className="flex flex-row justify-start items-center">
-      <Select title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"} defaultValue={"default"} options={options} />
+      <Select 
+      	title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"} 
+      	defaultValue={"default"} 
+      	options={options} 
+      	handleSetValue={loadPinnedResume}
+      />
 	  	<div>
 	  		{pinning ? (
 	  			<div className="flex flex-row items-center justify-start gap-0 mx-2">

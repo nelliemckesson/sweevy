@@ -26,6 +26,11 @@ export interface ResumeSectionProps {
   loadedResume?: string;
 }
 
+export interface SubSectionProps {
+  userId: string;
+  loadedResume?: ResumeField;
+}
+
 export interface FormProps {
   userId: string;
   fields: Field[];

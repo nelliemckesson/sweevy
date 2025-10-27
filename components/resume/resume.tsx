@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { createClient } from "@/lib/supabase/server";
-import { PinnedResumes } from "@/components/resume/pin-resume-button";
+import { fetchResume } from "@/app/actions/db";
+import { PinnedResumes } from "@/components/resume/pinned-resumes";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
@@ -27,6 +28,11 @@ import { Educations } from "@/components/resume/educations";
 export async function Resume({ userId, loadedResume }: ResumeSectionProps): Promise<JSX.Element> {
   const supabase = await createClient();
 
+  // loadedResume is set in page.tsx, and should always exist
+  let resumeId = loadedResume;
+
+  const resume = await fetchResume(userId, resumeId);
+
   return (
     <div className="max-w-4xl w-4/5">
       <div className="flex flex-row justify-between items-center mb-2">
@@ -36,10 +42,10 @@ export async function Resume({ userId, loadedResume }: ResumeSectionProps): Prom
         </Suspense>
       </div>
       <div className="w-100 border p-5 bg-white">
-        <ContactInfo userId={userId} loadedResume={loadedResume} />
-        <Skills userId={userId} loadedResume={loadedResume} />
-        <Roles userId={userId} loadedResume={loadedResume} />
-        <Educations userId={userId} loadedResume={loadedResume} />
+        <ContactInfo userId={userId} loadedResume={resume} />
+        <Skills userId={userId} loadedResume={resume} />
+        <Roles userId={userId} loadedResume={resume} />
+        <Educations userId={userId} loadedResume={resume} />
       </div>
     </div>
   );

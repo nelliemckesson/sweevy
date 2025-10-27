@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { Field } from "@/lib/types";
 
@@ -19,6 +20,42 @@ export async function fetchResumes(userId: string): Promise<ResumeField[] | null
   }
 
   return resumes?.sort((a, b) => a.name - b.name) ?? null;
+}
+
+export async function fetchResume(userId: string, id: number): Promise<ResumeField[] | null> {
+  const supabase = await createClient();
+
+  const { data: resume, error } = await supabase
+    .from('resumes')
+    .select()
+    .eq('user', userId)
+    .eq('id', id)
+    .single();
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching resume:', error);
+    return null;
+  }
+
+  return resume;
+}
+
+export async function fetchResumeByName(userId: string, name: string): Promise<ResumeField[] | null> {
+  const supabase = await createClient();
+
+  const { data: resume, error } = await supabase
+    .from('resumes')
+    .select()
+    .eq('user', userId)
+    .eq('name', name)
+    .single();
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching resume:', error);
+    return null;
+  }
+
+  return resume;
 }
 
 // default: {name: "default", fields: {}}
@@ -336,4 +373,8 @@ export async function fetchAllData(userId: string) {
     roles, 
     educations
   };
+}
+
+export async function refreshData() {
+  revalidatePath('/protected');
 }

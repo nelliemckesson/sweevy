@@ -1,24 +1,30 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+// options: [[id, label]]
 
 export function Select(
-  { title, defaultValue, options }: { title: string, defaultValue: string, options: string[] }
+  { 
+    title, 
+    defaultValue, 
+    options, 
+    handleSetValue 
+  }: { 
+    title: string, 
+    defaultValue: string, 
+    options: (string | number)[][], 
+    handleSetValue: (value: string) => void 
+  }
 ) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('resume', e.target.value);
-    router.push(`?${params.toString()}`);
+    handleSetValue(e.target.value);
   };
 
   return (
     <select value={defaultValue} onChange={handleChange} className="border text-sm p-1 rounded-sm">
       <option value="default">{title}</option>
       {options.map(item => {
-        return <option key={item} value={item}>{item}</option>
+        return <option key={item[0]} value={item[0]}>{item[1]}</option>
       })}      
     </select>
   );

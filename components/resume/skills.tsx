@@ -7,7 +7,7 @@ import { fetchSkills } from "@/app/actions/db";
 // DESCRIPTION: 
 // List of skills (software, programming languages, etc.)
 // --------
-export async function Skills({ userId, loadedResume }: ResumeSectionProps): Promise<JSX.Element> {
+export async function Skills({ userId, loadedResume }: SubSectionProps): Promise<JSX.Element> {
   const supabase = await createClient();
   const data = await fetchSkills(userId, supabase);
 

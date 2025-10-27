@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X } from 'lucide-react';
+import { fetchResumeByName } from "@/app/actions/db";
 import { DownloadButton } from "@/components/download-button";
 import { Resume } from "@/components/resume/resume";
 
@@ -10,8 +11,6 @@ export default async function ProtectedPage({
 }: {
   searchParams: { category?: string };
 }) {
-  const params = await searchParams;
-  const loadedResume = params.resume || 'default';
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getClaims();
@@ -21,6 +20,18 @@ export default async function ProtectedPage({
   }
 
   const user = data?.claims;
+
+  let defaultResume = await fetchResumeByName(user.sub, "default");
+
+  // populate default resume if it doesn't exist
+  if (!defaultResume) {
+    defaultResume = await setResume(userId, { name: "default", fields: {} });
+  }
+
+  const params = await searchParams;
+  const loadedResume = params.resume || defaultResume.id;
+
+  // when downloading, also load the pinnedResume and include based on values there
 
   return (
     <div className="flex-1 w-full flex flex-row p-5 gap-3">
