@@ -17,35 +17,53 @@ interface DraggableFieldsProps {
 
 export function DraggableFields({ fields, newText, parent, handleSetFields, handleAddField, renderNestedFields }: DraggableFieldsProps): JSX.Element {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<number | null>(null);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     setDraggedItem(index);
     e.dataTransfer.effectAllowed = 'move';
   }, []);
 
+  // index = new position of dragged item
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     e.preventDefault();
 
     if (draggedItem === null || draggedItem === index) return;
 
-    const newFields = [...fields];
-    const draggedField = newFields[draggedItem];
+    setDragOverItem(index);
+  }, [draggedItem]);
 
-    newFields.splice(draggedItem, 1);
-    newFields.splice(index, 0, draggedField);
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+
+    if (draggedItem === null || dragOverItem === null || draggedItem === dragOverItem) {
+      setDraggedItem(null);
+      setDragOverItem(null);
+      return;
+    }
+
+    const newFields = [...fields];
+    const [draggedField] = newFields.splice(draggedItem, 1);
+    newFields.splice(dragOverItem, 0, draggedField);
 
     // update positions to match new order
-    const fieldsWithUpdatedPositions = newFields.map((field, idx) => ({
-      ...field,
-      position: idx
-    }));
+    const fieldsWithUpdatedPositions = newFields.map((field, idx) => {
+      return {
+        ...field,
+        position: idx,
+        changed: true
+      };
+    });
 
     handleSetFields(fieldsWithUpdatedPositions);
-    setDraggedItem(index);
-  }, [draggedItem, fields, handleSetFields]);
+    setDraggedItem(null);
+    setDragOverItem(null);
+  }, [draggedItem, dragOverItem, fields, handleSetFields]);
 
   const handleDragEnd = useCallback((): void => {
+    console.log("END");
     setDraggedItem(null);
+    setDragOverItem(null);
   }, []);
 
   const addField = useCallback((): void => {
@@ -80,6 +98,13 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
     handleSetFields(newFields, immediate);
   }, [fields, handleSetFields]);
 
+  const styleForDragDirection = (index) => {
+    if (draggedItem === index) return 'opacity-50 scale-95';
+    if (dragOverItem === index && dragOverItem > draggedItem) return 'border-blue-400 border-b-2';
+    if (dragOverItem === index && dragOverItem < draggedItem) return 'border-blue-400 border-t-2';
+    return 'opacity-100';
+  }
+
   return (
     <div className="space-y-2">
       {fields.map((field, index) => (
@@ -89,9 +114,10 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
+            onDrop={handleDrop}
             onDragEnd={handleDragEnd}
-            className={`group flex items-center gap-3 bg-white rounded-lg transition-all ${
-              draggedItem === index ? 'opacity-50 scale-95' : 'opacity-100'
+            className={`group flex items-center gap-3 bg-white transition-all ${
+              styleForDragDirection(index)
             } hover:border-blue-300 hover:shadow-sm`}
           >
             <div className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600">
