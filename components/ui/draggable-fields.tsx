@@ -61,7 +61,6 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
   }, [draggedItem, dragOverItem, fields, handleSetFields]);
 
   const handleDragEnd = useCallback((): void => {
-    console.log("END");
     setDraggedItem(null);
     setDragOverItem(null);
   }, []);
@@ -75,7 +74,6 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
       include: true
     };
     if (parent) {
-      console.log("has parent");
       newField.parent = parent;
     }
     handleAddField([...fields, newField]);
