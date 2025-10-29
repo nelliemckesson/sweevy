@@ -28,10 +28,22 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     e.preventDefault();
 
-    if (draggedItem === null || draggedItem === index) return;
+    if (draggedItem === null) return;
 
-    setDragOverItem(index);
+    if (draggedItem === index) {
+      setDragOverItem(null);
+    } else {
+      setDragOverItem(index);
+    }
   }, [draggedItem]);
+
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
+    e.preventDefault();
+
+    if (dragOverItem === index) {
+      setDragOverItem(null);
+    }
+  }, [dragOverItem]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
@@ -112,6 +124,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
             draggable
             onDragStart={(e) => handleDragStart(e, index)}
             onDragOver={(e) => handleDragOver(e, index)}
+            onDragLeave={(e) => handleDragLeave(e, index)}
             onDrop={handleDrop}
             onDragEnd={handleDragEnd}
             className={`group flex items-center gap-3 bg-white transition-all ${
