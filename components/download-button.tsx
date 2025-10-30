@@ -1,7 +1,7 @@
 "use client";
 
 import { Document, Packer, Paragraph, TextRun } from "docx";
-import { Field } from "@/lib/types";
+import { Field, ResumeField } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { fetchAllData } from "@/app/actions/db";
 
@@ -9,14 +9,17 @@ import { fetchAllData } from "@/app/actions/db";
 interface ResumeData {
   contactinfo: Field[];
   skills: Field[];
+  roles: Field[];
+  educations: Field[];
 }
 
 interface DownloadButtonProps {
   userId: string;
   fileType: "html" | "docx";
+  loadedResume: ResumeField;
 }
 
-export function DownloadButton({ userId, fileType }: DownloadButtonProps): JSX.Element {
+export function DownloadButton({ userId, fileType, loadedResume }: DownloadButtonProps): JSX.Element {
   const handleDownload = async (): Promise<void> => {
     try {
       const data = await fetchAllData(userId) as ResumeData | null;
@@ -25,6 +28,15 @@ export function DownloadButton({ userId, fileType }: DownloadButtonProps): JSX.E
 
       let blob: Blob;
       let downloadName: string;
+
+      const d = new Date();
+      const suffix = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      console.log(suffix);
+
+      if (loadedResume.name !== "default") {
+        const sanitizedName = loadedResume.name.replace(/[^a-z0-9A-Z_-]/gim).trim();
+        suffix = `${sanitizedName}-${suffix}`;
+      }
 
       // TO DO: Get docx export working
       // if (fileType === "docx") {
@@ -45,7 +57,7 @@ export function DownloadButton({ userId, fileType }: DownloadButtonProps): JSX.E
       // } else
 
       if (fileType === "html") {
-        downloadName = "sweevy-resume.html";
+        downloadName = `resume-${suffix}.html`;
         // since we don't need to transform the html,
         // we can just use simple strings.
         const html: string[] = ["<html>", "<body>"];

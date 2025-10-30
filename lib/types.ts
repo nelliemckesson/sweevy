@@ -21,11 +21,6 @@ export interface ResumeField {
   user?: string;
 }
 
-export interface ResumeSectionProps {
-  userId: string;
-  loadedResume?: string;
-}
-
 export interface SubSectionProps {
   userId: string;
   loadedResume?: ResumeField;
