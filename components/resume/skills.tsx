@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ResumeSectionProps } from "@/lib/types";
 import { SkillsForm } from "@/components/resume/skills-form";
 import { fetchSkills } from "@/app/actions/db";
+import { adjustData } from "@/lib/utils";
 
 // --------
 // DESCRIPTION: 
@@ -10,6 +11,9 @@ import { fetchSkills } from "@/app/actions/db";
 export async function Skills({ userId, loadedResume }: SubSectionProps): Promise<JSX.Element> {
   const supabase = await createClient();
   const data = await fetchSkills(userId, supabase);
+
+  // adjust based on loaded resume
+  data = adjustData(data, loadedResume, "skills");
 
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">

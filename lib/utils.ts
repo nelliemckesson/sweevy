@@ -27,7 +27,7 @@ export function cn(...inputs: ClassValue[]) {
 //  }
 // }
 
-export function adjustData(data: Field[], loadedResume: ResumeField, field: string, subField: string) {
+export function adjustData(data: Field[], loadedResume: ResumeField, field: string, subField: string | null) {
   if (loadedResume.fields.hasOwnProperty(field)) {
     let fields = loadedResume.fields[field];
     for (let i=0; i<data.length; i++) {

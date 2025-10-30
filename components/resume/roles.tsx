@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ResumeSectionProps } from "@/lib/types";
 import { RolesForm } from "@/components/resume/roles-form";
 import { fetchRoles } from "@/app/actions/db";
+import { adjustData } from "@/lib/utils";
 
 // --------
 // DESCRIPTION: 
@@ -11,6 +12,9 @@ export async function Roles({ userId, loadedResume }: SubSectionProps): Promise<
   const supabase = await createClient();
   // fetch roles and role items
   const data = await fetchRoles(userId, supabase);
+
+  // adjust based on loaded resume
+  data = adjustData(data, loadedResume, "roles", "roleitems");
 
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
