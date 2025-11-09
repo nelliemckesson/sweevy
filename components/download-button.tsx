@@ -30,7 +30,7 @@ export function DownloadButton({ userId, fileType, loadedResume }: DownloadButto
       let downloadName: string;
 
       const d = new Date();
-      const suffix = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      let suffix = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
       console.log(suffix);
 
       if (loadedResume.name !== "default") {

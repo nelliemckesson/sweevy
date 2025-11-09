@@ -25,8 +25,18 @@ export default async function ProtectedPage({
 
   // populate default resume if it doesn't exist
   if (!defaultResume) {
-    defaultResume = await setResume(user.sub, { name: "default", fields: {} });
-    refreshData();
+    const defaultValues = {
+      name: "default",
+      fields: {
+        positions: [
+          "contactinfo",
+          "skills",
+          "roles",
+          "educations"
+        ],
+      }
+    };
+    defaultResume = await setResume(user.sub, defaultValues);
   }
 
   const params = await searchParams;

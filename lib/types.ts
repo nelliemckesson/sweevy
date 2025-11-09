@@ -17,6 +17,7 @@ export interface ResumeField {
   id?: number;
   created_at?: string;
   name: string;
+  positions?: string[];
   fields?: object;
   user?: string;
 }

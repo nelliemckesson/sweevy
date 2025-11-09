@@ -49,12 +49,20 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 	}
 
 	const pinResume = async () => {
+		const defaultOrder = {
+      "contactinfo": 0,
+      "skills": 1,
+      "roles": 2,
+      "educations": 3
+    };
+
 		let pinned = {};
     // fetch all resume data
     const data = await fetchAllData(userId);
     // for each section, collect ids of included items
     for (let k in data) {
     	pinned[k] = {};
+    	// TO DO: set the section position
     	for (let i=0; i<data[k].length; i++) {
     		if (data[k][i]["include"]) {
     			// contactinfos don't have ids

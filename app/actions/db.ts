@@ -51,7 +51,7 @@ export async function fetchResumeByName(userId: string, name: string): Promise<R
     .single();
 
   if (error && error.status !== 406) {
-    console.error('Error fetching resume:', error);
+    console.log('Error fetching resume:', error);
     return null;
   }
 
@@ -61,6 +61,8 @@ export async function fetchResumeByName(userId: string, name: string): Promise<R
 // default: {name: "default", fields: {}}
 export async function setResume(userId: string, fields: object): Promise<ResumeField | null> {
   const supabase = await createClient();
+
+  console.log(fields);
 
   const { data, error } = await supabase
     .from('resumes')
