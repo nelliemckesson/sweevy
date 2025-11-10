@@ -9,6 +9,7 @@ import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
 import { Educations } from "@/components/resume/educations";
+import { setResume } from "@/app/actions/db";
 
 // Example activeResume:
 // {
@@ -44,13 +45,45 @@ import { Educations } from "@/components/resume/educations";
 export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.Element> {
   const [activeResume, setActiveResume] = useState({"fields": {"positions": []}});
 
-  const moveSectionUp = (index) => {
-    console.log("would move up");
-    return;
+  const moveSectionUp = async (index) => {
+    if (index === 0) return;
+
+    const newPositions = [...activeResume.fields.positions];
+    [newPositions[index - 1], newPositions[index]] = [newPositions[index], newPositions[index - 1]];
+
+    const updatedResume = {
+      ...activeResume,
+      fields: {
+        ...activeResume.fields,
+        positions: newPositions
+      }
+    };
+
+    setActiveResume(updatedResume);
+    let savedResume = { ...updatedResume, name: "default" };
+    await setResume(userId, savedResume);
+  }
+
+  const moveSectionDown = async (index) => {
+    if (index >= activeResume.fields.positions.length - 1) return;
+
+    const newPositions = [...activeResume.fields.positions];
+    [newPositions[index], newPositions[index + 1]] = [newPositions[index + 1], newPositions[index]];
+
+    const updatedResume = {
+      ...activeResume,
+      fields: {
+        ...activeResume.fields,
+        positions: newPositions
+      }
+    };
+
+    setActiveResume(updatedResume);
+    let savedResume = { ...updatedResume, name: "default" };
+    await setResume(userId, savedResume);
   }
 
   useEffect(() => {
-    console.log(loadedResume);
     setActiveResume(loadedResume);
   }, [loadedResume]);
 
@@ -69,7 +102,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
 
           let childComponent;
           switch (item) {
-            case "contactinfo":
+            case "contactinfos":
               childComponent = (<ContactInfo userId={userId} loadedResume={activeResume} />);
               break;
             case "skills":
@@ -103,11 +136,12 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   />
                 )}
                 {index < activeResume.fields.positions.length-1 && (
-                  <ChevronsDown 
-                    size={20} 
-                    className="cursor-pointer" 
-                    title="Move Down" 
-                    aria-label="Move Section Down" 
+                  <ChevronsDown
+                    size={20}
+                    className="cursor-pointer"
+                    title="Move Down"
+                    aria-label="Move Section Down"
+                    onClick={e => moveSectionDown(index)}
                   />
                 )}
               </div>

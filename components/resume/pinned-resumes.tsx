@@ -8,24 +8,31 @@ import { Select } from "@/components/ui/select";
 import { TextPopup } from "@/components/ui/text-popup";
 import { fetchAllData, fetchResumes, setResume, refreshData } from "@/app/actions/db";
 
+// Example:
 // {
-// 	"contactinfos": {
-// 		2: {"position": 0},
-// 		5: {"position": 3}
-// 	},
-// 	"roles": {
-// 		1: {
-// 			"position": 0,
-// 			"subitems": {
-// 				3: {
-// 					"position": 0
-// 				},
-// 				6: {
-// 					"position": 2
-// 				}
-// 			}
-// 		}
-// 	}
+//  "positions": [
+//    "contactinfos",
+//    "skills",
+//    "roles",
+//    "educations"
+//  ],
+//  "contactinfos": {
+//    2: {"position": 0},
+//    5: {"position": 3}
+//  },
+//  "roles": {
+//    1: {
+//      "position": 0,
+//      "subitems": {
+//        3: {
+//          "position": 0
+//        },
+//        6: {
+//          "position": 2
+//        }
+//      }
+//    }
+//  }
 // }
 
 export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
@@ -50,7 +57,7 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 
 	const pinResume = async () => {
 		const defaultOrder = {
-      "contactinfo": 0,
+      "contactinfos": 0,
       "skills": 1,
       "roles": 2,
       "educations": 3

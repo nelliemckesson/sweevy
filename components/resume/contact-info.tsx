@@ -12,9 +12,12 @@ export function ContactInfo({ userId, loadedResume }: SubSectionProps): Promise<
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    let loadedData = await fetchContactInfo(userId);
-    loadedData = adjustData(loadedData, loadedResume, "contactinfo");
-    setData(loadedData);
+    const fetchData = async () => {
+      let loadedData = await fetchContactInfo(userId);
+      loadedData = adjustData(loadedData, loadedResume, "contactinfo");
+      setData(loadedData);
+    }
+    fetchData();
   }, [userId, loadedResume]);  
 
   return (

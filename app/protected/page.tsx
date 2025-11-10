@@ -29,7 +29,7 @@ export default async function ProtectedPage({
       name: "default",
       fields: {
         positions: [
-          "contactinfo",
+          "contactinfos",
           "skills",
           "roles",
           "educations"
