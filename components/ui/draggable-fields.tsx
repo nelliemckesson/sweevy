@@ -147,7 +147,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                     updateField(index, { include: e.target.checked }, true);
                   }}
                 />
-                <input
+                <textarea
                   type="text"
                   value={field.value}
                   placeholder={field.label || "Type some text..."}
@@ -161,7 +161,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
             
             <button
               onClick={() => removeField(index)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
+              className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-red-500 hover:bg-red-50 rounded"
               aria-label="Remove field"
             >
               <X size={18} />

@@ -136,34 +136,36 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
   }, [resumes]);
 
   return (
-    <div className="flex flex-row justify-start items-center">
+    <div className="flex flex-col md:flex-row justify-start items-start md:items-center">
       <Select 
       	title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"} 
       	defaultValue={"default"} 
       	options={options} 
       	handleSetValue={loadPinnedResume}
       />
-	  	<div>
-	  		{pinning ? (
-	  			<div className="flex flex-row items-center justify-start gap-0 mx-2">
-	  			  <input
-	            type="text"
-	            value={name}
-	            placeholder={"Name (e.g., 'ux designer')"}
-	            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-	              setName(e.target.value);
-	            }}
-	            className="text-sm border p-1"
-	          />
-	  		  	<Button className="text-sm" variant="ghost" onClick={pinResume}>Save</Button>
-	  		  </div>
-	  		) : (
-	  		  <Button className="text-sm" variant="ghost" onClick={togglePinning}><Pin size={20} />Pin this Resumé</Button>
-	  		)}
-	  	</div>
-	  	<TextPopup content={infoText}>
-        <Button className="p-0" variant="ghost"><Info size={20} /></Button>
-      </TextPopup>
+      <div className="flex flex-row justify-start items-center">
+		  	<div>
+		  		{pinning ? (
+		  			<div className="flex flex-row items-center justify-start gap-0 mx-2">
+		  			  <input
+		            type="text"
+		            value={name}
+		            placeholder={"Name (e.g., 'ux designer')"}
+		            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+		              setName(e.target.value);
+		            }}
+		            className="text-sm border p-1"
+		          />
+		  		  	<Button className="text-sm" variant="ghost" onClick={pinResume}>Save</Button>
+		  		  </div>
+		  		) : (
+		  		  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}><Pin size={20} />Pin this Resumé</Button>
+		  		)}
+		  	</div>
+		  	<TextPopup content={infoText}>
+	        <Button className="p-0" variant="ghost"><Info size={20} /></Button>
+	      </TextPopup>
+	    </div>
   	</div>
   )
 }

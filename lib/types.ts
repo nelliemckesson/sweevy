@@ -25,6 +25,10 @@ export interface ResumeField {
 export interface SubSectionProps {
   userId: string;
   loadedResume?: ResumeField;
+  handleMoveSectionUp: (index: number) => void;
+  handleMoveSectionDown: (index: number) => void;
+  index: number;
+  fieldsLength: number;
 }
 
 export interface FormProps {

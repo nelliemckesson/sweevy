@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { ChevronsUp, ChevronsDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { PinnedResumes } from "@/components/resume/pinned-resumes";
 import { DraggableFields } from "@/components/ui/draggable-fields";
@@ -88,9 +87,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
   }, [loadedResume]);
 
   return (
-    <div className="max-w-4xl w-4/5">
+    <div className="max-w-none md:max-w-4xl w-full md:w-4/5">
 
-      <div className="flex flex-row justify-between items-center mb-2">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <h2 className="text-lg">Update Your Resumé</h2>
         <Suspense fallback={<div>Loading pinned resumés...</div>}>
           <PinnedResumes userId={userId} />
@@ -103,16 +102,52 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
           let childComponent;
           switch (item) {
             case "contactinfos":
-              childComponent = (<ContactInfo userId={userId} loadedResume={activeResume} />);
+              childComponent = (
+                <ContactInfo 
+                  userId={userId} 
+                  loadedResume={activeResume} 
+                  handleMoveSectionUp={moveSectionUp} 
+                  handleMoveSectionDown={moveSectionDown} 
+                  index={index}
+                  fieldsLength={activeResume.fields.positions.length}
+                />
+              );
               break;
             case "skills":
-              childComponent = (<Skills userId={userId} loadedResume={activeResume} />);
+              childComponent = (
+                <Skills 
+                  userId={userId} 
+                  loadedResume={activeResume} 
+                  handleMoveSectionUp={moveSectionUp} 
+                  handleMoveSectionDown={moveSectionDown} 
+                  index={index}
+                  fieldsLength={activeResume.fields.positions.length}
+                />
+              );
               break;
             case "roles":
-              childComponent = (<Roles userId={userId} loadedResume={activeResume} />);
+              childComponent = (
+                <Roles 
+                  userId={userId} 
+                  loadedResume={activeResume} 
+                  handleMoveSectionUp={moveSectionUp} 
+                  handleMoveSectionDown={moveSectionDown} 
+                  index={index}
+                  fieldsLength={activeResume.fields.positions.length}
+                />
+              );
               break;
             case "educations":
-              childComponent = (<Educations userId={userId} loadedResume={activeResume} />);
+              childComponent = (
+                <Educations 
+                  userId={userId} 
+                  loadedResume={activeResume} 
+                  handleMoveSectionUp={moveSectionUp} 
+                  handleMoveSectionDown={moveSectionDown} 
+                  index={index}
+                  fieldsLength={activeResume.fields.positions.length}
+                />
+              );
               break;
             default:
               // TO DO: add custom sections here 
@@ -125,26 +160,6 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
               className="flex flex-row items-start justify-start"
             >
               {childComponent}
-              <div className="flex flex-row items-start justify-start">
-                {index !== 0 && (
-                  <ChevronsUp 
-                    size={20} 
-                    className="cursor-pointer" 
-                    title="Move Up" 
-                    aria-label="Move Section Up" 
-                    onClick={e => moveSectionUp(index)}
-                  />
-                )}
-                {index < activeResume.fields.positions.length-1 && (
-                  <ChevronsDown
-                    size={20}
-                    className="cursor-pointer"
-                    title="Move Down"
-                    aria-label="Move Section Down"
-                    onClick={e => moveSectionDown(index)}
-                  />
-                )}
-              </div>
             </div>
           );
         })}
