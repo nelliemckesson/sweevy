@@ -11,6 +11,23 @@ import { Educations } from "@/components/resume/educations";
 import { CustomSection } from "@/components/resume/custom-section";
 import { setResume, setCustomSection } from "@/app/actions/db";
 
+// TO DO: 
+// MVP:
+// Rename any section (if custom, set name; otherwise, add to activeResume.names)
+// Add design settings to sections and items
+// Download html (handle all the new stuff)
+// Download .docx
+// Subscription plans
+// Better landing page
+// Form validation
+// Rate limiting
+
+// AI:
+// Load a job description side-by-side
+// Use AI to analyze a job description
+// Use AI to refactor bullets based on job description
+// Use AI to refactor bullets based on typed text
+
 // Example activeResume:
 // {
 //  "positions": [
