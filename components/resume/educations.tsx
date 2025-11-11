@@ -39,7 +39,7 @@ export function Educations({
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <div className="border-b-2 flex flex-row justify-between items-end">
-        <h2 className="text-xl">Educations</h2>
+        <h2 className="text-xl">Education</h2>
         <UpDownButtons 
           handleMoveSectionUp={handleMoveSectionUp} 
           handleMoveSectionDown={handleMoveSectionDown} 

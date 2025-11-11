@@ -8,7 +8,8 @@ import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
 import { Educations } from "@/components/resume/educations";
-import { setResume } from "@/app/actions/db";
+import { CustomSection } from "@/components/resume/custom-section";
+import { setResume, setCustomSection } from "@/app/actions/db";
 
 // Example activeResume:
 // {
@@ -50,6 +51,8 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     roles: [],
     educations: []
   });
+  const [showNewSectionForm, setShowNewSectionForm] = useState(false);
+  const [newSectionName, setNewSectionName] = useState("");
 
   const moveSectionUp = async (index) => {
     if (index === 0) return;
@@ -95,6 +98,37 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     await setResume(userId, savedResume);
 
     setShouldLoadData(prev => true);
+  }
+
+  const handleCreateCustomSection = async () => {
+    // Create the custom section in the database
+    const newSection = await setCustomSection(userId, {
+      name: newSectionName || null,
+      include: true,
+      position: activeResume.fields.positions.length
+    });
+
+    if (newSection) {
+      // Add to activeResume positions
+      const newPositions = [...activeResume.fields.positions, `customsection-${newSection.id}`];
+      const updatedResume = {
+        ...activeResume,
+        fields: {
+          ...activeResume.fields,
+          positions: newPositions
+        }
+      };
+
+      setActiveResume(updatedResume);
+
+      // Save the updated resume
+      let savedResume = { ...updatedResume, name: "default" };
+      await setResume(userId, savedResume);
+
+      // Reset form
+      setNewSectionName("");
+      setShowNewSectionForm(false);
+    }
   }
 
   useEffect(() => {
@@ -177,7 +211,27 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
               );
               break;
             default:
-              // TO DO: add custom sections here 
+              // Handle custom sections
+              if (item.startsWith("customsection-")) {
+                const sectionId = parseInt(item.replace("customsection-", ""));
+
+                if (sectionId) {
+                  childComponent = (
+                    <CustomSection
+                      userId={userId}
+                      loadedResume={activeResume}
+                      handleMoveSectionUp={moveSectionUp}
+                      handleMoveSectionDown={moveSectionDown}
+                      handleSetPersistedData={setPersistedData}
+                      persistedData={persistedData[`customsection-${sectionId}`] || []}
+                      shouldLoadData={shouldLoadData}
+                      index={index}
+                      fieldsLength={activeResume.fields.positions.length}
+                      sectionId={sectionId}
+                    />
+                  );
+                }
+              }
               break;
           }
 
@@ -190,6 +244,48 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
             </div>
           );
         })}
+
+        {/* Add Custom Section Button */}
+        <div className="mt-6 border-t-2 pt-4">
+          {!showNewSectionForm ? (
+            <Button
+              onClick={() => setShowNewSectionForm(true)}
+              variant="outline"
+            >
+              + Add Custom Section
+            </Button>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="section-name" className="text-sm font-medium">
+                  Section Name (optional)
+                </label>
+                <input
+                  id="section-name"
+                  type="text"
+                  value={newSectionName}
+                  onChange={(e) => setNewSectionName(e.target.value)}
+                  placeholder="e.g., Certifications, Publications, etc."
+                  className="border rounded px-3 py-2"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleCreateCustomSection}>
+                  Create Section
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowNewSectionForm(false);
+                    setNewSectionName("");
+                  }}
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
     </div>

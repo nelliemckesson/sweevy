@@ -359,6 +359,135 @@ export async function deleteEducationItem(userId: string, field: Field): Promise
   return false;
 }
 
+// CUSTOM SECTIONS
+
+// customsection:
+// id: number,
+// created_at: string,
+// name: string,
+// include: boolean,
+// position: number,
+// user: string
+
+export async function fetchAllCustomSections(userId: string): Promise<Field[] | null> {
+  const supabase = await createClient();
+
+  const { data: customsections, error } = await supabase
+    .from('customsections')
+    .select(`
+      *,
+      customsectionitems (
+        id, 
+        value,
+        include,
+        position,
+        parent
+      )
+    `)
+    .eq('user', userId);
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching custom sections:', error);
+    return null;
+  }
+
+  return customsections ?? null;
+}
+
+export async function fetchCustomSection(id: number): Promise<Field[] | null> {
+  const supabase = await createClient();
+
+  const { data: customsections, error } = await supabase
+    .from('customsections')
+    .select(`
+      *,
+      customsectionitems (
+        id, 
+        value,
+        include,
+        position,
+        parent
+      )
+    `)
+    .eq('id', id)
+    .single();
+
+  if (error && error.status !== 406) {
+    console.error('Error fetching custom sections:', error);
+    return null;
+  }
+
+  return customsections ?? null;
+}
+
+export async function setCustomSection(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('customsections')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting custom section:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteCustomSection(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('customsections')
+    .delete()
+    .eq('id', field.id);
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
+export async function setCustomSectionItem(userId: string, field: Field): Promise<Field | null> {
+  const supabase = await createClient();
+
+  console.log(field);
+
+  const { data, error } = await supabase
+    .from('customsectionitems')
+    .upsert({ ...field, user: userId })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error setting customsectionitem:', error);
+    return null;
+  }
+
+  return data ?? null;
+}
+
+export async function deleteCustomSectionItem(userId: string, field: Field): Promise<boolean> {
+  const supabase = await createClient();
+
+  const response = await supabase
+    .from('customsectionitems')
+    .delete()
+    .eq('id', field.id);
+
+  if (response) {
+    console.log(response);
+    return true;
+  }
+
+  return false;
+}
+
 // GLOBAL
 
 export async function fetchAllData(userId: string) {

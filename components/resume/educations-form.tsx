@@ -12,7 +12,7 @@ export function EducationsForm({ userId, fields }: FormProps): JSX.Element {
     <ParentForm
       fields={fields}
       userId={userId}
-      newText={"education item"}
+      newText={"educational experience"}
       childKey="educationitems"
       SubItemsForm={EducationItemsForm}
       handleSaveItem={setEducation}
