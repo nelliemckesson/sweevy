@@ -14,6 +14,9 @@ export function ContactInfo({
   loadedResume,
   handleMoveSectionUp,
   handleMoveSectionDown,
+  handleSetPersistedData,
+  persistedData,
+  shouldLoadData,
   index,
   fieldsLength
 }: SubSectionProps): Promise<JSX.Element> {
@@ -24,8 +27,13 @@ export function ContactInfo({
       let loadedData = await fetchContactInfo(userId);
       loadedData = adjustData(loadedData, loadedResume, "contactinfo");
       setData(loadedData);
+      handleSetPersistedData(prev => ({...prev, contactinfos: loadedData}));
     }
-    fetchData();
+    if (shouldLoadData) {
+      fetchData();
+    } else {
+      setData(persistedData);
+    }
   }, [userId, loadedResume]);  
 
   return (

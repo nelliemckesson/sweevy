@@ -14,6 +14,9 @@ export function Skills({
   loadedResume,
   handleMoveSectionUp,
   handleMoveSectionDown,
+  handleSetPersistedData,
+  persistedData,
+  shouldLoadData,
   index,
   fieldsLength
 }: SubSectionProps): Promise<JSX.Element> {
@@ -24,8 +27,13 @@ export function Skills({
       let loadedData = await fetchSkills(userId);
       loadedData = adjustData(loadedData, loadedResume, "skills");
       setData(loadedData);
+      handleSetPersistedData(prev => ({...prev, skills: loadedData}));
     }
-    fetchData();
+    if (shouldLoadData) {
+      fetchData();
+    } else {
+      setData(persistedData);
+    }
   }, [userId, loadedResume]);  
 
   return (

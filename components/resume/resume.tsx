@@ -43,9 +43,18 @@ import { setResume } from "@/app/actions/db";
 // --------
 export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.Element> {
   const [activeResume, setActiveResume] = useState({"fields": {"positions": []}});
+  const [shouldLoadData, setShouldLoadData] = useState(true);
+  const [persistedData, setPersistedData] = useState({
+    contactinfos: [],
+    skills: [],
+    roles: [],
+    educations: []
+  });
 
   const moveSectionUp = async (index) => {
     if (index === 0) return;
+
+    setShouldLoadData(prev => false);
 
     const newPositions = [...activeResume.fields.positions];
     [newPositions[index - 1], newPositions[index]] = [newPositions[index], newPositions[index - 1]];
@@ -61,10 +70,14 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     setActiveResume(updatedResume);
     let savedResume = { ...updatedResume, name: "default" };
     await setResume(userId, savedResume);
+
+    setShouldLoadData(prev => true);
   }
 
   const moveSectionDown = async (index) => {
     if (index >= activeResume.fields.positions.length - 1) return;
+
+    setShouldLoadData(prev => false);
 
     const newPositions = [...activeResume.fields.positions];
     [newPositions[index], newPositions[index + 1]] = [newPositions[index + 1], newPositions[index]];
@@ -80,6 +93,8 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     setActiveResume(updatedResume);
     let savedResume = { ...updatedResume, name: "default" };
     await setResume(userId, savedResume);
+
+    setShouldLoadData(prev => true);
   }
 
   useEffect(() => {
@@ -108,6 +123,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   loadedResume={activeResume} 
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
+                  handleSetPersistedData={setPersistedData}
+                  persistedData={persistedData.contactinfos}
+                  shouldLoadData={shouldLoadData}
                   index={index}
                   fieldsLength={activeResume.fields.positions.length}
                 />
@@ -120,6 +138,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   loadedResume={activeResume} 
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
+                  handleSetPersistedData={setPersistedData}
+                  persistedData={persistedData.skills}
+                  shouldLoadData={shouldLoadData}
                   index={index}
                   fieldsLength={activeResume.fields.positions.length}
                 />
@@ -132,6 +153,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   loadedResume={activeResume} 
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
+                  handleSetPersistedData={setPersistedData}
+                  persistedData={persistedData.roles}
+                  shouldLoadData={shouldLoadData}
                   index={index}
                   fieldsLength={activeResume.fields.positions.length}
                 />
@@ -144,6 +168,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   loadedResume={activeResume} 
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
+                  handleSetPersistedData={setPersistedData}
+                  persistedData={persistedData.educations}
+                  shouldLoadData={shouldLoadData}
                   index={index}
                   fieldsLength={activeResume.fields.positions.length}
                 />

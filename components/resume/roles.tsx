@@ -14,6 +14,9 @@ export function Roles({
   loadedResume,
   handleMoveSectionUp,
   handleMoveSectionDown,
+  handleSetPersistedData,
+  persistedData,
+  shouldLoadData,
   index,
   fieldsLength
 }: SubSectionProps): Promise<JSX.Element> {
@@ -24,8 +27,13 @@ export function Roles({
       let loadedData = await fetchRoles(userId);
       loadedData = adjustData(loadedData, loadedResume, "roles", "roleitems");
       setData(loadedData);
+      handleSetPersistedData(prev => ({...prev, roles: loadedData}));
     }
-    fetchData();
+    if (shouldLoadData) {
+      fetchData();
+    } else {
+      setData(persistedData);
+    }
   }, [userId, loadedResume]);  
 
   return (

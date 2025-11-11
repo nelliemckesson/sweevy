@@ -14,6 +14,9 @@ export function Educations({
   loadedResume,
   handleMoveSectionUp,
   handleMoveSectionDown,
+  handleSetPersistedData,
+  persistedData,
+  shouldLoadData,
   index,
   fieldsLength
 }: SubSectionProps): Promise<JSX.Element> {
@@ -24,8 +27,13 @@ export function Educations({
       let loadedData = await fetchEducations(userId);
       loadedData = adjustData(loadedData, loadedResume, "educations", "educationitems");
       setData(loadedData);
+      handleSetPersistedData(prev => ({...prev, educations: loadedData}));
     }
-    fetchData();
+    if (shouldLoadData) {
+      fetchData();
+    } else {
+      setData(persistedData);
+    }
   }, [userId, loadedResume]);  
 
   return (

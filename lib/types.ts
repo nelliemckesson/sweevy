@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Field {
   id?: number;
   created_at?: string;
@@ -22,11 +24,21 @@ export interface ResumeField {
   user?: string;
 }
 
+export interface PersistedData {
+  contactinfos: any[];
+  skills: any[];
+  roles: any[];
+  educations: any[];
+}
+
 export interface SubSectionProps {
   userId: string;
   loadedResume?: ResumeField;
   handleMoveSectionUp: (index: number) => void;
   handleMoveSectionDown: (index: number) => void;
+  handleSetPersistedData: React.Dispatch<React.SetStateAction<PersistedData>>;
+  persistedData: any[];
+  shouldLoadData: boolean;
   index: number;
   fieldsLength: number;
 }
