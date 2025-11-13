@@ -21,9 +21,9 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 // Better landing page
 // Form validation
 // Rate limiting
+// Load a job description side-by-side
 
 // AI:
-// Load a job description side-by-side
 // Use AI to analyze a job description
 // Use AI to refactor bullets based on job description
 // Use AI to refactor bullets based on typed text

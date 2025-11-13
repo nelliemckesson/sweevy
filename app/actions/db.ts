@@ -179,7 +179,8 @@ export async function fetchRoles(userId: string): Promise<Field[] | null> {
         value,
         include,
         position,
-        parent
+        parent,
+        classnames
       )
     `)
     .eq('user', userId);
@@ -276,7 +277,8 @@ export async function fetchEducations(userId: string): Promise<Field[] | null> {
         value,
         include,
         position,
-        parent
+        parent,
+        classnames
       )
     `)
     .eq('user', userId);
@@ -381,7 +383,8 @@ export async function fetchAllCustomSections(userId: string): Promise<Field[] | 
         value,
         include,
         position,
-        parent
+        parent,
+        classnames
       )
     `)
     .eq('user', userId);
@@ -406,7 +409,8 @@ export async function fetchCustomSection(id: number): Promise<Field[] | null> {
         value,
         include,
         position,
-        parent
+        parent,
+        classnames
       )
     `)
     .eq('id', id)

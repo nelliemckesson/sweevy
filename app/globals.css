@@ -71,4 +71,43 @@
     /* Optional: Prevent manual resizing if desired */
     resize: none; 
   }
+
+  /* DESIGN TOOLBAR CLASSNAMES */
+  .italic {
+    font-style: italic;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .left {
+    text-align: left;
+    text-align-last: left;
+  }
+
+  .center {
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .right {
+    text-align: right;
+    text-align-last: right;
+  }
+
+  .justify {
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .bullet::before {
+    content: "• ";
+    font-size: 1.5em;
+    line-height: 1em;
+  }
+
+  .numbered::before {
+    content: "1. ";
+  }
 }

@@ -8,8 +8,7 @@ import { setEducationItem, deleteEducationItem } from "@/app/actions/db";
 export function EducationItemsForm({ userId, fields, parent }: FormProps): JSX.Element {
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-0 mt-4">
-      <h3>Description</h3>
+    <div className="flex-1 w-full flex flex-col gap-0 mt-0">
       <ChildForm
         fields={fields} 
         userId={userId}

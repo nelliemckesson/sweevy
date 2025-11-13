@@ -13,6 +13,7 @@ export interface Field {
   parent?: number;
   user?: string;
   changed?: boolean;
+  classnames?: string[];
 }
 
 export interface ResumeField {

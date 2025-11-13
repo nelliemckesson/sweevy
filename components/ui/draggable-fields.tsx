@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GripVertical, X, Plus } from 'lucide-react';
+import { GripVertical, X, Plus, Brush, Dot } from 'lucide-react';
 import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { DesignToolbar } from "@/components/resume/design-toolbar";
 
 // this type interface is only used once
 interface DraggableFieldsProps {
@@ -18,6 +20,8 @@ interface DraggableFieldsProps {
 export function DraggableFields({ fields, newText, parent, handleSetFields, handleAddField, renderNestedFields }: DraggableFieldsProps): JSX.Element {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
   const [dragOverItem, setDragOverItem] = useState<number | null>(null);
+  const [activeField, setActiveField] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
     setDraggedItem(index);
@@ -108,6 +112,15 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
     handleSetFields(newFields, immediate);
   }, [fields, handleSetFields]);
 
+  const designField = useCallback((index: number): void => {
+    console.log("would design");
+  }, []);
+
+  const openDesignModal = (field) => {
+    setActiveField(field);
+    setIsOpen(true);
+  }
+
   const styleForDragDirection = (index) => {
     if (draggedItem === index) return 'opacity-50 scale-95';
     if (dragOverItem === index && dragOverItem > draggedItem) return 'border-blue-400 border-b-2';
@@ -147,22 +160,34 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                     updateField(index, { include: e.target.checked }, true);
                   }}
                 />
-                <textarea
-                  type="text"
-                  value={field.value}
-                  placeholder={field.label || "Type some text..."}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    updateField(index, { value: e.target.value });
-                  }}
-                  className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex flex-row gap-0 justify-start items-center">
+                  {field.classnames?.indexOf("bullet") > -1 && (
+                    <span className="text-2xl">&#8226;</span>
+                  )}
+                  <textarea
+                    type="text"
+                    value={field.value}
+                    placeholder={field.label || "Type some text..."}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      updateField(index, { value: e.target.value });
+                    }}
+                    className="flex-1 w-full px-3 py-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
               </div>
             </div>
             
             <button
+              onClick={() => openDesignModal(field)}
+              className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-blue-500 hover:bg-blue-50 rounded"
+              aria-label="Adjust item design"
+            >
+              <Brush size={18} />
+            </button>
+            <button
               onClick={() => removeField(index)}
               className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-red-500 hover:bg-red-50 rounded"
-              aria-label="Remove field"
+              aria-label="Remove item"
             >
               <X size={18} />
             </button>
@@ -171,6 +196,12 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
         </div>
       ))}
       <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new {newText || "item"}</Button>
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="p-6">
+          <DesignToolbar field={activeField}/>
+        </div>
+      </Modal>
     </div>
   );
 }
