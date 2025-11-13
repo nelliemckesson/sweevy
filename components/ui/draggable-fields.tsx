@@ -195,7 +195,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
           {renderNestedFields && renderNestedFields(field)}
         </div>
       ))}
-      <Button variant="ghost" onClick={addField}><Plus size={20} />Add a new {newText || "item"}</Button>
+      <Button variant="ghost" onClick={addField}><Plus size={20} />Add another {newText || "item"}</Button>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">

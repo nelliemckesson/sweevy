@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { GripVertical, X } from 'lucide-react';
+import { GripVertical, X, Brush, ChevronsUp, ChevronsDown } from 'lucide-react';
 import { setResume, fetchResume, fetchResumeByName, refreshData } from "@/app/actions/db";
 import { DownloadButton } from "@/components/download-button";
 import { Resume } from "@/components/resume/resume";
@@ -60,7 +60,13 @@ export default async function ProtectedPage({
           </summary>
           <div>
             <p className="flex flex-row items-start gap-1 mb-1">
+              <ChevronsUp size={20} /><ChevronsDown size={20} /> Click to move an entire section up or down
+            </p>
+            <p className="flex flex-row items-start gap-1 mb-1">
               <GripVertical size={20} /> Hold and drag to change the item order in a section
+            </p>
+            <p className="flex flex-row items-start gap-1 mb-1">
+              <Brush size={20} /> Click to adjust an item's design
             </p>
             <p className="flex flex-row items-start gap-1 mb-1">
               <X size={20} /> Click to delete an item
