@@ -33,6 +33,15 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
     setClassnames((prev) => {
       let newClassnames = [...prev];
 
+      // bullet and numbered cancel eachother out
+      if (className === "bullet" && !newClassnames.includes(className)) {
+        newClassnames = newClassnames.filter((c) => c !== "numbered")
+      }
+      // bullet and numbered cancel eachother out
+      if (className === "numbered" && !newClassnames.includes(className)) {
+        newClassnames = newClassnames.filter((c) => c !== "bullet")
+      }
+
       // The "align" classes cancel eachother out
       if (className.startsWith("align")) {
         newClassnames = newClassnames.filter((c) => !c.startsWith("align") && c !== className)
@@ -171,7 +180,13 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
       </div>
 
       <div className="flex flex-row gap-2 items-center w-full px-3 py-2 mb-4">
-        <div className={`${classnames.join(" ")}`}>
+        {classnames?.indexOf("bullet") > -1 && (
+          <span className="text-2xl">&#8226;</span>
+        )}
+        {classnames?.indexOf("numbered") > -1 && (
+          <span className="">1. </span>
+        )}
+        <div className={`w-full ${classnames.join(" ")}`}>
           {field.value}
         </div>
       </div>

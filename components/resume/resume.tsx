@@ -14,7 +14,7 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 // TO DO: 
 // MVP:
 // Rename any section (if custom, set name; otherwise, add to activeResume.names)
-// Add design settings to sections and items
+// Add design settings to sections
 // Download html (handle all the new stuff)
 // Download .docx
 // Subscription plans

@@ -162,9 +162,12 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                     updateField(index, { include: e.target.checked }, true);
                   }}
                 />
-                <div className="flex flex-row gap-0 justify-start items-center">
+                <div className="w-full flex flex-row gap-0 justify-start items-center">
                   {field.classnames?.indexOf("bullet") > -1 && (
                     <span className="text-2xl">&#8226;</span>
+                  )}
+                  {field.classnames?.indexOf("numbered") > -1 && (
+                    <span className="">{index+1}. </span>
                   )}
                   <textarea
                     type="text"

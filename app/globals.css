@@ -160,14 +160,4 @@
   .fontsize96 {
     font-size: 96pt;
   }
-
-  .bullet:before {
-    content: "• ";
-    font-size: 1.5em;
-    line-height: 1em;
-  }
-
-  .numbered:before {
-    content: "1. ";
-  }
 }
