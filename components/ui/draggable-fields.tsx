@@ -21,6 +21,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
   const [dragOverItem, setDragOverItem] = useState<number | null>(null);
   const [activeField, setActiveField] = useState({});
+  const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number): void => {
@@ -116,8 +117,9 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
     console.log("would design");
   }, []);
 
-  const openDesignModal = (field) => {
+  const openDesignModal = (field, index) => {
     setActiveField(field);
+    setActiveFieldIndex(index);
     setIsOpen(true);
   }
 
@@ -171,14 +173,14 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       updateField(index, { value: e.target.value });
                     }}
-                    className="flex-1 w-full px-3 py-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`flex-1 w-full px-3 py-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""}`}
                   />
                 </div>
               </div>
             </div>
             
             <button
-              onClick={() => openDesignModal(field)}
+              onClick={() => openDesignModal(field, index)}
               className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-blue-500 hover:bg-blue-50 rounded"
               aria-label="Adjust item design"
             >
@@ -199,7 +201,15 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
-          <DesignToolbar field={activeField}/>
+          <DesignToolbar
+            field={activeField}
+            onSave={(classnames) => {
+              if (activeFieldIndex !== null) {
+                updateField(activeFieldIndex, { classnames }, true);
+                setIsOpen(false);
+              }
+            }}
+          />
         </div>
       </Modal>
     </div>

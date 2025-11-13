@@ -17,9 +17,10 @@ import { Button } from "@/components/ui/button";
 interface DesignToolbarProps {
   field: Field;
   onUpdate?: (classnames: string[]) => void;
+  onSave?: (classnames: string[]) => void;
 }
 
-export function DesignToolbar({ field, onUpdate }: DesignToolbarProps): JSX.Element {
+export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): JSX.Element {
   const [classnames, setClassnames] = useState<string[]>(field.classnames || []);
 
   const fontSizeOptions = ["7", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96"];
@@ -175,7 +176,7 @@ export function DesignToolbar({ field, onUpdate }: DesignToolbarProps): JSX.Elem
         </div>
       </div>
 
-      <Button>Save</Button>
+      <Button onClick={() => onSave && onSave(classnames)}>Save</Button>
     </div>
   );
 }
