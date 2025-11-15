@@ -29,6 +29,15 @@ export function Educations({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('Skills');
   const [isOpen, setIsOpen] = useState(false);
+  const [classnames, setClassnames] = useState([]);
+
+  const handleSaveClassnames = async (classnames) => {
+    const updatedClassnames = { ...loadedResume.fields.classnames, educations: classnames };
+    const updatedResume = { ...loadedResume.fields, classnames: updatedClassnames };
+
+    handleUpdateResume({...loadedResume, fields: updatedResume});
+    setClassnames(classnames);
+  };
 
   const handleEditName = () => {
     setEditedName(data.name || 'Skills');
@@ -65,6 +74,12 @@ export function Educations({
       } else {
         setEditedName("Education");
       }
+      // if section has design classnames, use the
+      if (loadedResume.fields.classnames?.hasOwnProperty("educations")) {
+        setClassnames(loadedResume.fields.classnames.educations);
+      } else {
+        setClassnames([]);
+      }
     }
     if (shouldLoadData) {
       fetchData();
@@ -86,7 +101,7 @@ export function Educations({
             />
           ) : (
             <>
-              <h2 className="text-xl">{editedName}</h2>
+              <h2 className={`text-xl ${classnames.join(" ")}`}>{editedName}</h2>
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -105,7 +120,10 @@ export function Educations({
         <div className="p-6">
           <DesignToolbar
             field={{value: editedName}}
-            onSave={() => console.log("woud")}
+            onSave={(classnames) => {
+              handleSaveClassnames(classnames);
+              setIsOpen(false);
+            }}
           />
         </div>
       </Modal>

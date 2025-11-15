@@ -31,19 +31,19 @@ export function CustomSection({
   const [editedName, setEditedName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let loadedData = await fetchCustomSection(sectionId);
-      loadedData = adjustData(loadedData, loadedResume, `customsection-${sectionId}`, "customsectionitems");
-      setData(loadedData);
-      handleSetPersistedData(prev => ({...prev, [`customsection-${sectionId}`]: loadedData}));
+  const handleSaveClassnames = async (classnames) => {
+    const updatedData = { ...data, classnames };
+    // remove customsectionitems before saving
+    const subItems = [ ...updatedData.customsectionitems ];
+    delete updatedData.customsectionitems;
+    const result = await setCustomSection(userId, updatedData);
+    if (result) {
+      // add the customsectionitems back
+      updatedData.customsectionitems = subItems;
+      setData(updatedData);
+      handleSetPersistedData(prev => ({...prev, [`customsection-${sectionId}`]: updatedData}));
     }
-    if (shouldLoadData) {
-      fetchData();
-    } else {
-      setData(persistedData);
-    }
-  }, [userId, loadedResume, sectionId]);
+  }
 
   const handleEditName = () => {
     setEditedName(data.name || '');
@@ -56,7 +56,6 @@ export function CustomSection({
     const subItems = [ ...updatedData.customsectionitems ];
     delete updatedData.customsectionitems;
     const result = await setCustomSection(userId, updatedData);
-    console.log(result);
     if (result) {
       // add the customsectionitems back
       updatedData.customsectionitems = subItems;
@@ -75,6 +74,20 @@ export function CustomSection({
     setIsOpen(true);
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      let loadedData = await fetchCustomSection(sectionId);
+      loadedData = adjustData(loadedData, loadedResume, `customsection-${sectionId}`, "customsectionitems");
+      setData(loadedData);
+      handleSetPersistedData(prev => ({...prev, [`customsection-${sectionId}`]: loadedData}));
+    }
+    if (shouldLoadData) {
+      fetchData();
+    } else {
+      setData(persistedData);
+    }
+  }, [userId, loadedResume, sectionId]);
+
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <div className={`border-b-2 flex flex-row justify-between items-end`}>
@@ -88,7 +101,7 @@ export function CustomSection({
             />
           ) : (
             <>
-              <h2 className="text-xl">{data.name || '[Untitled Section]'}</h2>
+              <h2 className={`text-xl ${data?.classnames?.join(" ")}`}>{data.name || '[Untitled Section]'}</h2>
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -105,8 +118,11 @@ export function CustomSection({
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
-            field={{value: data.name || '[Untitled Section]'}}
-            onSave={() => console.log("woud")}
+            field={{...data, value: data.name || '[Untitled Section]'}}
+            onSave={(classnames) => {
+              handleSaveClassnames(classnames);
+              setIsOpen(false);
+            }}
           />
         </div>
       </Modal>

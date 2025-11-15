@@ -13,9 +13,10 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// Include section titles and positions in pinned resumes
+// Preview designed resume
+// Include section titles and positions in pinned resumes?
 // Design spans within a value
-// Add design settings to sections
+// Add border option to design toolbar
 // Download html (handle all the new stuff)
 // Download .docx
 // Subscription plans
@@ -38,6 +39,7 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 //    "educations"
 //  ],
 //  "titles": {"skills": "Ninja Skills"}
+//  "classnames": {"skills": ["fontsize36"]}
 //  "contactinfos": {
 //    2: {"position": 0},
 //    5: {"position": 3}

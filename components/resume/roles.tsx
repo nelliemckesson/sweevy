@@ -29,6 +29,15 @@ export function Roles({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('Experience');
   const [isOpen, setIsOpen] = useState(false);
+  const [classnames, setClassnames] = useState([]);
+
+  const handleSaveClassnames = async (classnames) => {
+    const updatedClassnames = { ...loadedResume.fields.classnames, roles: classnames };
+    const updatedResume = { ...loadedResume.fields, classnames: updatedClassnames };
+
+    handleUpdateResume({...loadedResume, fields: updatedResume});
+    setClassnames(classnames);
+  };
 
   const handleEditName = () => {
     setEditedName(data.name || 'Experience');
@@ -65,6 +74,12 @@ export function Roles({
       } else {
         setEditedName("Experience");
       }
+      // if section has design classnames, use the
+      if (loadedResume.fields.classnames?.hasOwnProperty("roles")) {
+        setClassnames(loadedResume.fields.classnames.roles);
+      } else {
+        setClassnames([]);
+      }
     }
     if (shouldLoadData) {
       fetchData();
@@ -86,7 +101,7 @@ export function Roles({
             />
           ) : (
             <>
-              <h2 className="text-xl">{editedName}</h2>
+              <h2 className={`text-xl ${classnames.join(" ")}`}>{editedName}</h2>
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -98,13 +113,17 @@ export function Roles({
           fieldsLength={fieldsLength}
         />
       </div>
+      
       <RolesForm fields={data || []} userId={userId} />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
             field={{value: editedName}}
-            onSave={() => console.log("woud")}
+            onSave={(classnames) => {
+              handleSaveClassnames(classnames);
+              setIsOpen(false);
+            }}
           />
         </div>
       </Modal>

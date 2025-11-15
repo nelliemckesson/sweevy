@@ -25,6 +25,8 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
 
   const fontSizeOptions = ["7", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96"];
 
+  console.log(field);
+
   useEffect(() => {
     setClassnames(field.classnames || []);
   }, [field]);
