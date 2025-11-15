@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Field, FormProps } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { sanitizeInput } from "@/lib/utils";
 
 interface DesignToolbarProps {
   field: Field;
@@ -61,7 +62,8 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
 
     // Update the value with the new HTML
     if (previewRef.current) {
-      setValue(previewRef.current.innerHTML);
+      const sanitized = sanitizeInput(previewRef.current.innerHTML, true);
+      setValue(sanitized);
     }
 
     // Clear the selection
@@ -282,9 +284,15 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         )}
         <div
           ref={previewRef}
+          contentEditable
+          suppressContentEditableWarning
           className={`w-full ${classnames.join(" ")}`}
           style={{ userSelect: 'text', cursor: 'text' }}
           dangerouslySetInnerHTML={{ __html: value }}
+          onInput={(e: React.FormEvent<HTMLDivElement>) => {
+            const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+            setValue(sanitized);
+          }}
         />
       </div>
 

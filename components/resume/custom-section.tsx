@@ -35,9 +35,11 @@ export function CustomSection({
     // Sanitize the name, allowing safe HTML (spans for styling)
     const sanitizedName = sanitizeInput(name, true);
     const updatedData = { ...data, classnames, name: sanitizedName };
+
     // remove customsectionitems before saving
     const subItems = [ ...updatedData.customsectionitems ];
     delete updatedData.customsectionitems;
+
     const result = await setCustomSection(userId, updatedData);
     if (result) {
       // add the customsectionitems back
@@ -56,9 +58,11 @@ export function CustomSection({
     // Sanitize the name, allowing safe HTML (spans for styling)
     const sanitizedName = sanitizeInput(editedName, true);
     let updatedData = { ...data, name: sanitizedName };
+
     // remove customsectionitems before saving
     const subItems = [ ...updatedData.customsectionitems ];
     delete updatedData.customsectionitems;
+
     const result = await setCustomSection(userId, updatedData);
     if (result) {
       // add the customsectionitems back

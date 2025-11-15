@@ -67,7 +67,7 @@ export function ParentForm({
       const updatePromises = fields
         .filter(field => field.changed)
         .map(field => {
-          const { changed, roleitems, ...rest } = field;
+          const { changed, roleitems, educationitems, ...rest } = field;
           console.log(rest);
           return handleSaveItem(userId, rest);
         });

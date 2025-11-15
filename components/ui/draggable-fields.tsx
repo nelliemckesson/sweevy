@@ -6,6 +6,7 @@ import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { DesignToolbar } from "@/components/resume/design-toolbar";
+import { sanitizeInput } from "@/lib/utils";
 
 // this type interface is only used once
 interface DraggableFieldsProps {
@@ -169,14 +170,20 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                   {field.classnames?.indexOf("numbered") > -1 && (
                     <span className="">{index+1}. </span>
                   )}
-                  <textarea
-                    type="text"
-                    value={field.value}
-                    placeholder={field.label || "Type some text..."}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      updateField(index, { value: e.target.value });
+                  <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    dangerouslySetInnerHTML={{ __html: field.value }}
+                    onInput={(e: React.FormEvent<HTMLDivElement>) => {
+                      const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+                      updateField(index, { value: sanitized });
                     }}
-                    className={`flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""}`}
+                    onBlur={(e: React.FocusEvent<HTMLDivElement>) => {
+                      const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+                      updateField(index, { value: sanitized }, true);
+                    }}
+                    data-placeholder={field.label || "Type some text..."}
+                    className={`flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""} empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400`}
                   />
                 </div>
               </div>
@@ -206,9 +213,10 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
         <div className="p-6">
           <DesignToolbar
             field={activeField}
-            onSave={(classnames) => {
+            onSave={(classnames, value) => {
               if (activeFieldIndex !== null) {
-                updateField(activeFieldIndex, { classnames }, true);
+                const sanitized = sanitizeInput(value, true);
+                updateField(activeFieldIndex, { classnames, value: sanitized }, true);
                 setIsOpen(false);
               }
             }}
