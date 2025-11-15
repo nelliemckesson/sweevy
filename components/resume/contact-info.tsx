@@ -39,7 +39,7 @@ export function ContactInfo({
   return (
     <div className="flex-1 w-full flex flex-col gap-3 mb-4">
       <div className="border-b-2 flex flex-row justify-between items-end">
-        <h2 className="text-xl">Contact Info</h2>
+        <h2 className="text-xl text-gray-400">Contact Info</h2>
         <UpDownButtons 
           handleMoveSectionUp={handleMoveSectionUp} 
           handleMoveSectionDown={handleMoveSectionDown} 

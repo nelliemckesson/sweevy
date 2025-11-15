@@ -110,7 +110,7 @@ export function CustomSection({
           ) : (
             <>
               <h2 
-                className={`text-xl ${data?.classnames?.join(" ")}`} 
+                className={`text-xl ${data?.classnames?.join(" ")} ${data.name ? 'text-black' : 'text-gray-400'}`} 
                 dangerouslySetInnerHTML={{ __html: data.name || '[Untitled Section]' }}
               />
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
