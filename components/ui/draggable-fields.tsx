@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GripVertical, X, Plus, Brush, Dot } from 'lucide-react';
+import { GripVertical, X, Plus, Brush } from 'lucide-react';
 import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";

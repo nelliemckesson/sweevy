@@ -297,6 +297,12 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
       </div>
 
       <Button onClick={() => onSave && onSave(classnames, value)}>Save</Button>
+
+      <div className={`hidden opacity-0 italic bold underline alignleft 
+        aligncenter alignright alignjustify bordertop borderright borderbottom 
+        borderleft fontsize8 fontsize9 fontsize10 fontsize11 fontsize12 fontsize14 
+        fontsize18 fontsize24 fontsize30 fontsize36 fontsize48 fontsize60 fontsize72 
+        fontsize96 fontsize7`}>Tailwind override</div>
     </div>
   );
 }

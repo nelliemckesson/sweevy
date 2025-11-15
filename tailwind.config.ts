@@ -8,6 +8,10 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // Dynamically applied font sizes from design toolbar
+    { pattern: /^fontsize(7|8|9|10|11|12|14|18|24|30|36|48|60|72|96)$/ },
+  ],
   theme: {
     extend: {
       colors: {
