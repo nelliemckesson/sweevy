@@ -44,7 +44,6 @@ export function Educations({
   };
 
   const handleEditName = () => {
-    setEditedName(data.name || 'Skills');
     setIsEditingName(true);
   };
 
@@ -62,7 +61,7 @@ export function Educations({
 
   const handleCancelEdit = () => {
     setIsEditingName(false);
-    setEditedName('Skills');
+    setEditedName(loadedResume.fields.titles?.educations || 'Education');
   };
 
   const openDesignModal = () => {
@@ -108,7 +107,10 @@ export function Educations({
             />
           ) : (
             <>
-              <h2 className={`text-xl ${classnames.join(" ")}`}>{editedName}</h2>
+              <h2 
+                className={`text-xl ${classnames.join(" ")}`}
+                dangerouslySetInnerHTML={{ __html: editedName }}
+              />
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -126,7 +128,7 @@ export function Educations({
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
-            field={{value: editedName}}
+            field={{value: editedName, classnames}}
             onSave={(classnames, value) => {
               handleSaveClassnames(classnames, value);
               setIsOpen(false);

@@ -27,9 +27,9 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
   const [value, setValue] = useState<string>(field.value || '');
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const fontSizeOptions = ["7", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96"];
-
   console.log(field);
+
+  const fontSizeOptions = ["7", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96"];
 
   useEffect(() => {
     setClassnames(field.classnames || []);
@@ -106,8 +106,6 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
       if (onUpdate) {
         onUpdate(newClassnames);
       }
-
-      console.log(newClassnames);
 
       return newClassnames;
     });

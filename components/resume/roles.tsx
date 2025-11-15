@@ -44,7 +44,6 @@ export function Roles({
   };
 
   const handleEditName = () => {
-    setEditedName(data.name || 'Experience');
     setIsEditingName(true);
   };
 
@@ -62,7 +61,7 @@ export function Roles({
 
   const handleCancelEdit = () => {
     setIsEditingName(false);
-    setEditedName('Experience');
+    setEditedName(loadedResume.fields.titles?.roles || 'Experience');
   };
 
   const openDesignModal = () => {
@@ -108,7 +107,10 @@ export function Roles({
             />
           ) : (
             <>
-              <h2 className={`text-xl ${classnames.join(" ")}`}>{editedName}</h2>
+              <h2 
+                className={`text-xl ${classnames.join(" ")}`}
+                dangerouslySetInnerHTML={{ __html: editedName }}
+              />
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -126,7 +128,7 @@ export function Roles({
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
-            field={{value: editedName}}
+            field={{value: editedName, classnames}}
             onSave={(classnames, value) => {
               handleSaveClassnames(classnames, value);
               setIsOpen(false);
