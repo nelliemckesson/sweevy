@@ -13,16 +13,15 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// Duplicate an item
 // Preview designed resume
 // Include section titles and positions in pinned resumes?
 // Download html (handle all the new stuff)
 // Download .docx
 // Subscription plans
 // Better landing page
-// Form validation
 // Rate limiting
 // Load a job description side-by-side
+// Import a resume (docx)
 
 // AI:
 // Use AI to analyze a job description

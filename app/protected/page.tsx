@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { GripVertical, X, Brush, SquarePen, ChevronsUp, ChevronsDown } from 'lucide-react';
+import { GripVertical, X, Brush, SquarePen, ChevronsUp, ChevronsDown, CopyPlus } from 'lucide-react';
 import { setResume, fetchResume, fetchResumeByName, refreshData } from "@/app/actions/db";
 import { DownloadButton } from "@/components/download-button";
 import { Resume } from "@/components/resume/resume";
@@ -73,6 +73,9 @@ export default async function ProtectedPage({
             </p>
             <p className="flex flex-row items-start gap-1 mb-1">
               <X size={20} /> Click to delete an item
+            </p>
+            <p className="flex flex-row items-start gap-1 mb-1">
+              <CopyPlus size={20} /> Click to duplicate an item
             </p>
             <p className="flex flex-row items-start gap-1 mb-1">
               <input
