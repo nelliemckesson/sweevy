@@ -83,6 +83,10 @@
     font-weight: bold;
   }
 
+  .underline {
+    text-decoration: underline;
+  }
+
   .alignleft {
     text-align: left;
     text-align-last: left;
@@ -102,7 +106,23 @@
     text-align: justify;
     text-align-last: left;
   }
-  
+
+  .bordertop {
+    border-top: 1px solid black;
+  }
+
+  .borderright {
+    border-right: 1px solid black;
+  }
+
+  .borderbottom {
+    border-bottom: 1px solid black;
+  }
+
+  .borderleft {
+    border-left: 1px solid black;
+  }
+
   .fontsize7 {
     font-size: 7pt;
   }

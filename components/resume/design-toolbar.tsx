@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   List,
   ListOrdered,
   Italic,
   Bold,
+  Underline,
   TextAlignStart,
   TextAlignCenter,
   TextAlignEnd,
-  TextAlignJustify
+  TextAlignJustify,
+  SquareDashedTopSolid
 } from 'lucide-react';
 import { Field, FormProps } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,8 @@ interface DesignToolbarProps {
 
 export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): JSX.Element {
   const [classnames, setClassnames] = useState<string[]>(field.classnames || []);
+  const [value, setValue] = useState<string>(field.value || '');
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const fontSizeOptions = ["7", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96"];
 
@@ -29,9 +33,50 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
 
   useEffect(() => {
     setClassnames(field.classnames || []);
+    setValue(field.value || '');
   }, [field]);
 
+  const applyStyleToSelection = (className: string): boolean => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return false;
+
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+
+    // Only apply if there's selected text and it's within our preview
+    if (!selectedText || !previewRef.current?.contains(range.commonAncestorContainer)) {
+      return false;
+    }
+
+    // Extract the contents of the range
+    const fragment = range.extractContents();
+
+    // Create a span element with the class
+    const span = document.createElement('span');
+    span.className = className;
+    span.appendChild(fragment);
+
+    // Insert the span at the range position
+    range.insertNode(span);
+
+    // Update the value with the new HTML
+    if (previewRef.current) {
+      setValue(previewRef.current.innerHTML);
+    }
+
+    // Clear the selection
+    selection.removeAllRanges();
+
+    return true;
+  };
+
   const toggleClassname = (className: string) => {
+    // Check if user has selected text - if so, apply style to selection only
+    if (applyStyleToSelection(className)) {
+      return; // Selection was styled, don't apply to whole field
+    }
+
+    // No selection - apply to whole field as before
     setClassnames((prev) => {
       let newClassnames = [...prev];
 
@@ -86,7 +131,7 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
 
   return (
     <div>
-      <div className="flex flex-row mb-4">
+      <div className="flex flex-row">
         <button
           onClick={() => toggleClassname('italic')}
           className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
@@ -105,6 +150,16 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
           aria-label="Bold"
         >
           <Bold size={18} />
+        </button>
+
+        <button
+          onClick={() => toggleClassname('underline')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
+            hasClassname('underline') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Underline"
+        >
+          <Underline size={18} />
         </button>
 
         <button
@@ -181,6 +236,45 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         </select>
       </div>
 
+      <div className="flex flex-row mb-4">
+        <button
+          onClick={() => toggleClassname('bordertop')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
+            hasClassname('bordertop') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Top Border"
+        >
+          <SquareDashedTopSolid size={18} />
+        </button>
+        <button
+          onClick={() => toggleClassname('borderright')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded rotate-90 ${
+            hasClassname('borderright') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Right Border"
+        >
+          <SquareDashedTopSolid size={18} />
+        </button>
+        <button
+          onClick={() => toggleClassname('borderbottom')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded rotate-180 ${
+            hasClassname('borderbottom') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Bottom Border"
+        >
+          <SquareDashedTopSolid size={18} />
+        </button>
+        <button
+          onClick={() => toggleClassname('borderleft')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded rotate-270 ${
+            hasClassname('borderleft') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Left Border"
+        >
+          <SquareDashedTopSolid size={18} />
+        </button>
+      </div>
+
       <div className="flex flex-row gap-2 items-center w-full px-3 py-2 mb-4">
         {classnames?.indexOf("bullet") > -1 && (
           <span className="text-2xl">&#8226;</span>
@@ -188,9 +282,12 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         {classnames?.indexOf("numbered") > -1 && (
           <span className="">1. </span>
         )}
-        <div className={`w-full ${classnames.join(" ")}`}>
-          {field.value}
-        </div>
+        <div
+          ref={previewRef}
+          className={`w-full ${classnames.join(" ")}`}
+          style={{ userSelect: 'text', cursor: 'text' }}
+          dangerouslySetInnerHTML={{ __html: value }}
+        />
       </div>
 
       <Button onClick={() => onSave && onSave(classnames)}>Save</Button>

@@ -176,7 +176,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       updateField(index, { value: e.target.value });
                     }}
-                    className={`flex-1 w-full px-3 py-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""}`}
+                    className={`flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""}`}
                   />
                 </div>
               </div>
