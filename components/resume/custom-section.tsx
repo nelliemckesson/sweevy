@@ -8,7 +8,7 @@ import { SectionTitleForm } from "@/components/resume/section-title-form";
 import { Modal } from "@/components/ui/modal";
 import { DesignToolbar } from "@/components/resume/design-toolbar";
 import { fetchCustomSection, setCustomSection } from "@/app/actions/db";
-import { adjustData } from "@/lib/utils";
+import { adjustData, sanitizeInput } from "@/lib/utils";
 
 // --------
 // DESCRIPTION:
@@ -31,8 +31,10 @@ export function CustomSection({
   const [editedName, setEditedName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSaveClassnames = async (classnames) => {
-    const updatedData = { ...data, classnames };
+  const handleSaveClassnames = async (classnames, name) => {
+    // Sanitize the name, allowing safe HTML (spans for styling)
+    const sanitizedName = sanitizeInput(name, true);
+    const updatedData = { ...data, classnames, name: sanitizedName };
     // remove customsectionitems before saving
     const subItems = [ ...updatedData.customsectionitems ];
     delete updatedData.customsectionitems;
@@ -51,7 +53,9 @@ export function CustomSection({
   };
 
   const handleSaveName = async () => {
-    let updatedData = { ...data, name: editedName };
+    // Sanitize the name, allowing safe HTML (spans for styling)
+    const sanitizedName = sanitizeInput(editedName, true);
+    let updatedData = { ...data, name: sanitizedName };
     // remove customsectionitems before saving
     const subItems = [ ...updatedData.customsectionitems ];
     delete updatedData.customsectionitems;
@@ -101,7 +105,10 @@ export function CustomSection({
             />
           ) : (
             <>
-              <h2 className={`text-xl ${data?.classnames?.join(" ")}`}>{data.name || '[Untitled Section]'}</h2>
+              <h2 
+                className={`text-xl ${data?.classnames?.join(" ")}`} 
+                dangerouslySetInnerHTML={{ __html: data.name || '[Untitled Section]' }}
+              />
               <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
             </>
           )}
@@ -119,8 +126,8 @@ export function CustomSection({
         <div className="p-6">
           <DesignToolbar
             field={{...data, value: data.name || '[Untitled Section]'}}
-            onSave={(classnames) => {
-              handleSaveClassnames(classnames);
+            onSave={(classnames, value) => {
+              handleSaveClassnames(classnames, value);
               setIsOpen(false);
             }}
           />

@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 interface DesignToolbarProps {
   field: Field;
   onUpdate?: (classnames: string[]) => void;
-  onSave?: (classnames: string[]) => void;
+  onSave?: (classnames: string[], value: string) => void;
 }
 
 export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): JSX.Element {
@@ -290,7 +290,7 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         />
       </div>
 
-      <Button onClick={() => onSave && onSave(classnames)}>Save</Button>
+      <Button onClick={() => onSave && onSave(classnames, value)}>Save</Button>
     </div>
   );
 }

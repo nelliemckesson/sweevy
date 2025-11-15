@@ -7,7 +7,7 @@ import { SectionTitleForm } from "@/components/resume/section-title-form";
 import { DesignToolbar } from "@/components/resume/design-toolbar";
 import { SkillsForm } from "@/components/resume/skills-form";
 import { fetchSkills, setResume } from "@/app/actions/db";
-import { adjustData } from "@/lib/utils";
+import { adjustData, sanitizeInput } from "@/lib/utils";
 
 // --------
 // DESCRIPTION: 
@@ -31,12 +31,16 @@ export function Skills({
   const [isOpen, setIsOpen] = useState(false);
   const [classnames, setClassnames] = useState([]);
 
-  const handleSaveClassnames = async (classnames) => {
+  const handleSaveClassnames = async (classnames, name) => {
+    const sanitizedName = sanitizeInput(name, true);
+
     const updatedClassnames = { ...loadedResume.fields.classnames, skills: classnames };
-    const updatedResume = { ...loadedResume.fields, classnames: updatedClassnames };
+    const updatedTitles = { ...loadedResume.fields.titles, skills: sanitizedName };
+    const updatedResume = { ...loadedResume.fields, classnames: updatedClassnames, titles: updatedTitles };
 
     handleUpdateResume({...loadedResume, fields: updatedResume});
     setClassnames(classnames);
+    setEditedName(sanitizedName);
   };
 
   const handleEditName = () => {
@@ -45,7 +49,10 @@ export function Skills({
   };
 
   const handleSaveName = async () => {
-    const updatedTitles = { ...loadedResume.fields.titles, skills: editedName };
+    // Sanitize the name, allowing safe HTML (spans for styling)
+    const sanitizedName = sanitizeInput(editedName, true);
+
+    const updatedTitles = { ...loadedResume.fields.titles, skills: sanitizedName };
     const updatedResume = { ...loadedResume.fields, titles: updatedTitles };
 
     handleUpdateResume({...loadedResume, fields: updatedResume});
@@ -120,8 +127,8 @@ export function Skills({
         <div className="p-6">
           <DesignToolbar
             field={{value: editedName}}
-            onSave={(classnames) => {
-              handleSaveClassnames(classnames);
+            onSave={(classnames, value) => {
+              handleSaveClassnames(classnames, value);
               setIsOpen(false);
             }}
           />
