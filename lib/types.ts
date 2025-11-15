@@ -21,6 +21,7 @@ export interface ResumeField {
   created_at?: string;
   name: string;
   positions?: string[];
+  titles?: string[];
   fields?: object;
   user?: string;
 }
@@ -38,6 +39,7 @@ export interface SubSectionProps {
   handleMoveSectionUp: (index: number) => void;
   handleMoveSectionDown: (index: number) => void;
   handleSetPersistedData: React.Dispatch<React.SetStateAction<PersistedData>>;
+  handleUpdateResume?: (updatedResume: ResumeField) => void;
   persistedData: any[];
   shouldLoadData: boolean;
   index: number;

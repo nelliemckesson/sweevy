@@ -64,6 +64,7 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     };
 
 		let pinned = {};
+		// TO DO: fetch default resume (for section names and order)
     // fetch all resume data
     const data = await fetchAllData(userId);
     // for each section, collect ids of included items

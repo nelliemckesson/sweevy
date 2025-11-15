@@ -13,7 +13,8 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// Rename any section (if custom, set name; otherwise, add to activeResume.names)
+// Include section titles and positions in pinned resumes
+// Design spans within a value
 // Add design settings to sections
 // Download html (handle all the new stuff)
 // Download .docx
@@ -36,6 +37,7 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 //    "roles",
 //    "educations"
 //  ],
+//  "titles": {"skills": "Ninja Skills"}
 //  "contactinfos": {
 //    2: {"position": 0},
 //    5: {"position": 3}
@@ -70,6 +72,16 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
   });
   const [showNewSectionForm, setShowNewSectionForm] = useState(false);
   const [newSectionName, setNewSectionName] = useState("");
+
+  const updateResume = async (updatedResume) => {
+    setShouldLoadData(prev => false);
+
+    setActiveResume(updatedResume);
+    let savedResume = { ...updatedResume, name: "default" };
+    await setResume(userId, savedResume);
+
+    setShouldLoadData(prev => true);
+  }
 
   const moveSectionUp = async (index) => {
     if (index === 0) return;
@@ -190,6 +202,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
                   handleSetPersistedData={setPersistedData}
+                  handleUpdateResume={updateResume}
                   persistedData={persistedData.skills}
                   shouldLoadData={shouldLoadData}
                   index={index}
@@ -205,6 +218,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
                   handleSetPersistedData={setPersistedData}
+                  handleUpdateResume={updateResume}
                   persistedData={persistedData.roles}
                   shouldLoadData={shouldLoadData}
                   index={index}
@@ -220,6 +234,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
                   handleMoveSectionUp={moveSectionUp} 
                   handleMoveSectionDown={moveSectionDown} 
                   handleSetPersistedData={setPersistedData}
+                  handleUpdateResume={updateResume}
                   persistedData={persistedData.educations}
                   shouldLoadData={shouldLoadData}
                   index={index}

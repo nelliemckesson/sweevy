@@ -71,7 +71,9 @@
     /* Optional: Prevent manual resizing if desired */
     resize: none; 
   }
+}
 
+@layer base {
   /* DESIGN TOOLBAR CLASSNAMES */
   .italic {
     font-style: italic;
@@ -100,7 +102,7 @@
     text-align: justify;
     text-align-last: left;
   }
-
+  
   .fontsize7 {
     font-size: 7pt;
   }

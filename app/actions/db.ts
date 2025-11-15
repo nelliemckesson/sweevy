@@ -363,14 +363,6 @@ export async function deleteEducationItem(userId: string, field: Field): Promise
 
 // CUSTOM SECTIONS
 
-// customsection:
-// id: number,
-// created_at: string,
-// name: string,
-// include: boolean,
-// position: number,
-// user: string
-
 export async function fetchAllCustomSections(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 

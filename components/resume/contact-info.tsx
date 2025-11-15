@@ -51,3 +51,5 @@ export function ContactInfo({
     </div>
   );
 }
+
+// <h2 className="text-xl">Contact Info</h2>

@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ResumeSectionProps } from "@/lib/types";
 import { UpDownButtons } from "@/components/ui/up-down-buttons";
+import { Modal } from "@/components/ui/modal";
+import { SectionTitleControls } from "@/components/resume/section-title-controls";
+import { SectionTitleForm } from "@/components/resume/section-title-form";
+import { DesignToolbar } from "@/components/resume/design-toolbar";
 import { SkillsForm } from "@/components/resume/skills-form";
-import { fetchSkills } from "@/app/actions/db";
+import { fetchSkills, setResume } from "@/app/actions/db";
 import { adjustData } from "@/lib/utils";
 
 // --------
@@ -15,12 +19,39 @@ export function Skills({
   handleMoveSectionUp,
   handleMoveSectionDown,
   handleSetPersistedData,
+  handleUpdateResume,
   persistedData,
   shouldLoadData,
   index,
   fieldsLength
 }: SubSectionProps): Promise<JSX.Element> {
   const [data, setData] = useState([]);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('Skills');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleEditName = () => {
+    setEditedName(data.name || 'Skills');
+    setIsEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    const updatedTitles = { ...loadedResume.fields.titles, skills: editedName };
+    const updatedResume = { ...loadedResume.fields, titles: updatedTitles };
+
+    handleUpdateResume({...loadedResume, fields: updatedResume});
+
+    setIsEditingName(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingName(false);
+    setEditedName('Skills');
+  };
+
+  const openDesignModal = () => {
+    setIsOpen(true);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +59,12 @@ export function Skills({
       loadedData = adjustData(loadedData, loadedResume, "skills");
       setData(loadedData);
       handleSetPersistedData(prev => ({...prev, skills: loadedData}));
+      // if section has a custom name, use it
+      if (loadedResume.fields.titles?.hasOwnProperty("skills")) {
+        setEditedName(loadedResume.fields.titles.skills);
+      } else {
+        setEditedName("Skills");
+      }
     }
     if (shouldLoadData) {
       fetchData();
@@ -39,7 +76,21 @@ export function Skills({
   return (
     <div className="flex-1 w-full flex flex-col gap-0 mb-4">
       <div className="border-b-2 flex flex-row justify-between items-end">
-        <h2 className="text-xl">Skills</h2>
+        <div className="group flex flex-row items-center gap-2">
+          {isEditingName ? (
+            <SectionTitleForm 
+              editedName={editedName} 
+              setEditedName={setEditedName} 
+              handleSaveName={handleSaveName} 
+              handleCancelEdit={handleCancelEdit} 
+            />
+          ) : (
+            <>
+              <h2 className="text-xl">{editedName}</h2>
+              <SectionTitleControls handleOpenModal={openDesignModal} handleEditName={handleEditName} />
+            </>
+          )}
+        </div>
         <UpDownButtons 
           handleMoveSectionUp={handleMoveSectionUp} 
           handleMoveSectionDown={handleMoveSectionDown} 
@@ -47,7 +98,17 @@ export function Skills({
           fieldsLength={fieldsLength}
         />
       </div>
+
       <SkillsForm fields={data || []} userId={userId} />
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="p-6">
+          <DesignToolbar
+            field={{value: editedName}}
+            onSave={() => console.log("woud")}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }
