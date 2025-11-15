@@ -7,7 +7,7 @@ import { SectionTitleForm } from "@/components/resume/section-title-form";
 import { DesignToolbar } from "@/components/resume/design-toolbar";
 import { RolesForm } from "@/components/resume/roles-form";
 import { fetchRoles, setResume } from "@/app/actions/db";
-import { adjustData } from "@/lib/utils";
+import { adjustData, sanitizeInput } from "@/lib/utils";
 
 // --------
 // DESCRIPTION: 
@@ -32,11 +32,15 @@ export function Roles({
   const [classnames, setClassnames] = useState([]);
 
   const handleSaveClassnames = async (classnames) => {
+    const sanitizedName = sanitizeInput(name, true);
+
     const updatedClassnames = { ...loadedResume.fields.classnames, roles: classnames };
+    const updatedTitles = { ...loadedResume.fields.titles, roles: sanitizedName };
     const updatedResume = { ...loadedResume.fields, classnames: updatedClassnames };
 
     handleUpdateResume({...loadedResume, fields: updatedResume});
     setClassnames(classnames);
+    setEditedName(sanitizedName);
   };
 
   const handleEditName = () => {
@@ -45,7 +49,10 @@ export function Roles({
   };
 
   const handleSaveName = async () => {
-    const updatedTitles = { ...loadedResume.fields.titles, roles: editedName };
+    // Sanitize the name, allowing safe HTML (spans for styling)
+    const sanitizedName = sanitizeInput(editedName, true);
+
+    const updatedTitles = { ...loadedResume.fields.titles, roles: sanitizedName };
     const updatedResume = { ...loadedResume.fields, titles: updatedTitles };
 
     handleUpdateResume({...loadedResume, fields: updatedResume});
@@ -113,15 +120,15 @@ export function Roles({
           fieldsLength={fieldsLength}
         />
       </div>
-      
+
       <RolesForm fields={data || []} userId={userId} />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
             field={{value: editedName}}
-            onSave={(classnames) => {
-              handleSaveClassnames(classnames);
+            onSave={(classnames, value) => {
+              handleSaveClassnames(classnames, value);
               setIsOpen(false);
             }}
           />
