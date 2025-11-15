@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GripVertical, X, Plus, Brush } from 'lucide-react';
+import { GripVertical, X, Plus, Brush, CopyPlus } from 'lucide-react';
 import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -95,7 +95,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
       newField.parent = parent;
     }
     handleAddField([...fields, newField]);
-  }, [fields, handleSetFields]);
+  }, [fields, handleAddField]);
 
   const removeField = useCallback((index: number): void => {
     // remove field by array index
@@ -113,6 +113,33 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
     newFields[index] = { ...newFields[index], ...updates, changed: true };
     handleSetFields(newFields, immediate);
   }, [fields, handleSetFields]);
+
+  const duplicateField = useCallback((field: Field, index: number): void => {
+    const newField: Field = {
+      label: field.label,
+      value: field.value,
+      position: index+1,
+      classnames: field.classnames || [],
+      changed: true,
+      include: true
+    };
+    if (parent) {
+      newField.parent = parent;
+    }
+
+    // Insert the new field after the current one
+    const newFields = [...fields];
+    newFields.splice(index + 1, 0, newField);
+
+    // Renumber all fields to match their new positions
+    const fieldsWithUpdatedPositions = newFields.map((field, idx) => ({
+      ...field,
+      position: idx,
+      changed: true
+    }));
+
+    handleSetFields(fieldsWithUpdatedPositions);
+  }, [fields, handleSetFields, parent]);
 
   const designField = useCallback((index: number): void => {
     console.log("would design");
@@ -196,6 +223,15 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
             >
               <Brush size={18} />
             </button>
+
+            <button
+              onClick={() => duplicateField(field, index)}
+              className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-blue-500 hover:bg-blue-50 rounded"
+              aria-label="Copy this item"
+            >
+              <CopyPlus size={18} />
+            </button>
+
             <button
               onClick={() => removeField(index)}
               className="opacity-1 md:opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 md:text-gray-400 md:hover:text-red-500 hover:bg-red-50 rounded"

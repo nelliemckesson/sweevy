@@ -13,11 +13,9 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// Get fontsizes working...
 // Duplicate an item
 // Preview designed resume
 // Include section titles and positions in pinned resumes?
-// Design spans within a value
 // Download html (handle all the new stuff)
 // Download .docx
 // Subscription plans
