@@ -487,18 +487,20 @@ export async function deleteCustomSectionItem(userId: string, field: Field): Pro
 // GLOBAL
 
 export async function fetchAllData(userId: string) {
-  const [contactinfo, skills, roles, educations] = await Promise.all([
+  const [contactinfo, skills, roles, educations, customsections] = await Promise.all([
     fetchContactInfo(userId),
     fetchSkills(userId),
     fetchRoles(userId),
-    fetchEducations(userId)
+    fetchEducations(userId),
+    fetchAllCustomSections(userId)
   ]);
 
   return {
     contactinfo,
     skills,
     roles, 
-    educations
+    educations,
+    customsections
   };
 }
 

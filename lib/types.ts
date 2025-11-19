@@ -23,14 +23,15 @@ export interface ResumeField {
   positions?: string[];
   titles?: string[];
   fields?: object;
+  classnames?: string[];
   user?: string;
 }
 
 export interface PersistedData {
-  contactinfos: any[];
-  skills: any[];
-  roles: any[];
-  educations: any[];
+  contactinfos: Field[];
+  skills: Field[];
+  roles: Field[];
+  educations: Field[];
 }
 
 export interface SubSectionProps {

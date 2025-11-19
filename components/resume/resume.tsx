@@ -9,11 +9,11 @@ import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
 import { Educations } from "@/components/resume/educations";
 import { CustomSection } from "@/components/resume/custom-section";
+import { Preview } from "@/components/resume/preview";
 import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// Preview designed resume
 // Include section titles and positions in pinned resumes?
 // Download html (handle all the new stuff)
 // Download .docx
@@ -72,6 +72,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
   });
   const [showNewSectionForm, setShowNewSectionForm] = useState(false);
   const [newSectionName, setNewSectionName] = useState("");
+  const [mode, setMode] = useState("edit");
 
   const updateResume = async (updatedResume) => {
     setShouldLoadData(prev => false);
@@ -168,12 +169,25 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     <div className="max-w-none md:max-w-4xl w-full md:w-4/5">
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-        <h2 className="text-lg">Update Your Resumé</h2>
+        <div className="flex flex-row justify-start items-center">
+          <h2 className="text-lg">Update Your Resumé</h2>
+          <Button
+            onClick={() => setMode(prev => prev === "edit" ? "preview" : "edit")}
+            variant="ghost"
+          >
+            {mode === "edit" ? "Preview" : "Edit"} Resumé
+          </Button>
+        </div>
         <Suspense fallback={<div>Loading pinned resumés...</div>}>
           <PinnedResumes userId={userId} />
         </Suspense>
       </div>
 
+      {mode === "preview" ? (
+        <div className="w-100 border p-5 bg-white">
+          <Preview persistedData={persistedData} loadedResume={activeResume} />
+        </div>
+      ) : (
       <div className="w-100 border p-5 bg-white">
         {activeResume.fields.positions.map((item, index) => {
 
@@ -319,6 +333,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
           )}
         </div>
       </div>
+      )}
 
     </div>
   );

@@ -11,6 +11,7 @@ interface ResumeData {
   skills: Field[];
   roles: Field[];
   educations: Field[];
+  customsections: ResumeField[];
 }
 
 interface DownloadButtonProps {
