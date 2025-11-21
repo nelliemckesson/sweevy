@@ -15,18 +15,23 @@ import { Preview } from "@/components/resume/preview";
 import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
-// MVP:
-// save changes to pinned resume
+// MVP (f&f):
+// update persistedData when adjusting styling
+// update persistedData when setting "include"
+// loading pinned resume should change checkbox states and positions, etc.
+// delete a pinned resume?
 // don't allow align styles on spans selections?
 // Include section titles and positions in pinned resumes?
-// test pinned resumes again
-// Subscription plans
 // Better landing page
 // Rate limiting
-// Load a job description side-by-side
 // Import a resume (docx)
+// Leave a tip
+// Contact/bugs form
 
-// AI:
+// V2:
+// Subscription plans: 0, 3/30, 5/50
+// Cap number of items based on plan
+// Load a job description side-by-side
 // Use AI to analyze a job description
 // Use AI to refactor bullets based on job description
 // Use AI to refactor bullets based on typed text
@@ -182,12 +187,17 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
             {mode === "edit" ? "Preview" : "Edit"} Resumé
           </Button>
           <DownloadButton 
+            fileType="docx" 
+            userId={userId} 
+            data={persistedData} 
+            loadedResume={activeResume} 
+          />
+          <DownloadButton 
             fileType="html" 
             userId={userId} 
             data={persistedData} 
             loadedResume={activeResume} 
           />
-          <DownloadButton fileType="docx" userId={userId} data={persistedData} loadedResume={activeResume} />
         </div>
 
         <div className="flex flex-row justify-start items-center">
@@ -195,7 +205,7 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
         </div>
 
         <Suspense fallback={<div>Loading pinned resumés...</div>}>
-          <PinnedResumes userId={userId} />
+          <PinnedResumes userId={userId} activeResume={activeResume} setActiveResume={setActiveResume} />
         </Suspense>
       </div>
 

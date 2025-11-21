@@ -1,12 +1,55 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { GripVertical, X, Plus, Brush, CopyPlus } from 'lucide-react';
 import { Field } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { DesignToolbar } from "@/components/resume/design-toolbar";
 import { sanitizeInput } from "@/lib/utils";
+
+// EditableField component to handle contentEditable without cursor issues
+function EditableField({
+  value,
+  classnames,
+  label,
+  onUpdate
+}: {
+  value: string;
+  classnames?: string[];
+  label: string;
+  onUpdate: (value: string, immediate: boolean) => void;
+}) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isUserTyping = useRef(false);
+
+  // Only update innerHTML when value changes externally (not from user input)
+  useEffect(() => {
+    if (!isUserTyping.current && contentRef.current && contentRef.current.innerHTML !== value) {
+      contentRef.current.innerHTML = value;
+    }
+  }, [value]);
+
+  return (
+    <div
+      ref={contentRef}
+      contentEditable
+      suppressContentEditableWarning
+      onInput={(e: React.FormEvent<HTMLDivElement>) => {
+        isUserTyping.current = true;
+        const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+        onUpdate(sanitized, false);
+      }}
+      onBlur={(e: React.FocusEvent<HTMLDivElement>) => {
+        isUserTyping.current = false;
+        const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+        onUpdate(sanitized, true);
+      }}
+      data-placeholder={label || "Type some text..."}
+      className={`font-serif flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${classnames?.join(" ") || ""} empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400`}
+    />
+  );
+}
 
 // this type interface is only used once
 interface DraggableFieldsProps {
@@ -197,20 +240,13 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                   {field.classnames?.indexOf("numbered") > -1 && (
                     <span className="">{index+1}. </span>
                   )}
-                  <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    dangerouslySetInnerHTML={{ __html: field.value }}
-                    onInput={(e: React.FormEvent<HTMLDivElement>) => {
-                      const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
-                      updateField(index, { value: sanitized });
+                  <EditableField
+                    value={field.value}
+                    classnames={field.classnames}
+                    label={field.label || "Type some text..."}
+                    onUpdate={(sanitized, immediate) => {
+                      updateField(index, { value: sanitized }, immediate);
                     }}
-                    onBlur={(e: React.FocusEvent<HTMLDivElement>) => {
-                      const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
-                      updateField(index, { value: sanitized }, true);
-                    }}
-                    data-placeholder={field.label || "Type some text..."}
-                    className={`font-serif flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""} empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400`}
                   />
                 </div>
               </div>

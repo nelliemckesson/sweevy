@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Pin, Info } from 'lucide-react';
+import { ResumeField } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { TextPopup } from "@/components/ui/text-popup";
+import { Modal } from "@/components/ui/modal";
 import { fetchAllData, fetchResumes, setResume, refreshData } from "@/app/actions/db";
 
 // Example:
@@ -35,7 +37,15 @@ import { fetchAllData, fetchResumes, setResume, refreshData } from "@/app/action
 //  }
 // }
 
-export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
+export function PinnedResumes({ 
+	userId, 
+	activeResume, 
+	setActiveResume 
+}: { 
+	userId: string, 
+	activeResume: ResumeField, 
+	setActiveResume: (updatedResume: ResumeField) => void 
+}): JSX.Element {
 	const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -43,6 +53,7 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 	const [options, setOptions] = useState([]);
 	const [pinning, setPinning] = useState(false);
 	const [name, setName] = useState("");
+	const [selectedResumeId, setSelectedResumeId] = useState("new");
 
   // If a pinned resume is loaded, surface an option to save the changes?
 
@@ -55,16 +66,27 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 		setPinning(true);
 	}
 
+	const cancelPinning = () => {
+		setPinning(false);
+		setName("");
+		setSelectedResumeId("new");
+	}
+
 	const pinResume = async () => {
-		const defaultOrder = {
-      "contactinfos": 0,
-      "skills": 1,
-      "roles": 2,
-      "educations": 3
-    };
+		// Validate that a name is provided when creating new
+		if (selectedResumeId === "new" && !name.trim()) {
+			return;
+		}
 
 		let pinned = {};
-		// TO DO: fetch default resume (for section names and order)
+		// use activeResume for section names and order
+		pinned.positions = activeResume.fields.positions;
+		if (activeResume.fields?.hasOwnProperty("titles")) {
+			pinned.titles = activeResume.fields.titles;
+		}
+		if (activeResume.fields?.hasOwnProperty("classnames")) {
+			pinned.classnames = activeResume.fields.classnames;
+		}
     // fetch all resume data
     const data = await fetchAllData(userId);
     // for each section, collect ids of included items
@@ -78,10 +100,12 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     			// create the base object to include
     			pinned[k][key] = {"position": data[k][i]["position"]};
     			// collect ids of included subitems
-    			if (k === "roles" || k === "educations") {
+    			if (k === "roles" || k === "educations" || k === "customsections") {
     				let subArray = "roleitems";
     				if (k === "educations") {
     					subArray = "educationitems";
+    				} else if (k === "customsections") {
+    					subArray = "customsectionitems";
     				}
     				pinned[k][key]["subitems"] = {};
     				for (let j=0; j<data[k][i][subArray].length; j++) {
@@ -94,21 +118,33 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
     		}
     	}
     }
-    // save as new resume
-    let newResume = await setResume(userId, {name: name, fields: pinned});
-    // setResumes(prev => [...prev, newResume]);
+
+    if (selectedResumeId === "new") {
+      // save as new resume
+      let newResume = await setResume(userId, {name: name, fields: pinned});
+      setResumes(prev => [...prev, newResume]);
+    } else {
+      // overwrite existing resume
+      const existingResume = resumes.find(r => r.id === parseInt(selectedResumeId));
+      let updatedResume = await setResume(userId, {id: selectedResumeId, name: existingResume.name, fields: pinned});
+      setResumes(prev => prev.map(r => r.id === selectedResumeId ? updatedResume : r));
+    }
+
     // reset state
     setPinning(false);
     setName("");
+    setSelectedResumeId("new");
     refreshData();
     return;
   }
 
-  const loadPinnedResume = (value: string) => {
-  	const params = new URLSearchParams(searchParams.toString());
-    params.set('resume', value);
-    router.push(`?${params.toString()}`);
-    refreshData();
+  const loadPinnedResume = (selectedId: string) => {
+  	const existingResume = resumes.find(r => r.id === parseInt(selectedId));
+  	setActiveResume(existingResume);
+  	// const params = new URLSearchParams(searchParams.toString());
+    // params.set('resume', value);
+    // router.push(`?${params.toString()}`);
+    // refreshData();
   }
 
   useEffect(() => {
@@ -137,36 +173,60 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
   }, [resumes]);
 
   return (
-    <div className="flex flex-col md:flex-row justify-start items-start md:items-center">
-      <Select 
-      	title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"} 
-      	defaultValue={"default"} 
-      	options={options} 
-      	handleSetValue={loadPinnedResume}
-      />
-      <div className="flex flex-row justify-start items-center">
-		  	<div>
-		  		{pinning ? (
-		  			<div className="flex flex-row items-center justify-start gap-0 mx-2">
-		  			  <input
-		            type="text"
-		            value={name}
-		            placeholder={"Name (e.g., 'ux designer')"}
-		            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-		              setName(e.target.value);
-		            }}
-		            className="text-sm border p-1"
-		          />
-		  		  	<Button className="text-sm" variant="ghost" onClick={pinResume}>Save</Button>
-		  		  </div>
-		  		) : (
-		  		  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}><Pin size={20} />Pin</Button>
-		  		)}
-		  	</div>
-		  	<TextPopup content={infoText}>
-	        <Button className="p-0" variant="ghost"><Info size={20} /></Button>
-	      </TextPopup>
-	    </div>
-  	</div>
+    <>
+      <div className="flex flex-col md:flex-row justify-start items-start md:items-center">
+        <Select
+        	title={options.length > 0 ? "Load a Pinned Resumé..." : "No Pinned Resumés"}
+        	defaultValue={"default"}
+        	options={options}
+        	handleSetValue={loadPinnedResume}
+        />
+        <div className="flex flex-row justify-start items-center">
+		  	  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}>
+		  	    <Pin size={20} />Pin
+		  	  </Button>
+		  	  <TextPopup content={infoText}>
+	          <Button className="p-0" variant="ghost"><Info size={20} /></Button>
+	        </TextPopup>
+	      </div>
+    	</div>
+
+    	<Modal isOpen={pinning} onClose={cancelPinning}>
+    	  <div className="p-6">
+    	    <h2 className="text-xl font-semibold mb-4">Pin Resume</h2>
+    	    <div className="flex flex-col gap-4">
+    	      <div>
+    	        <label className="block text-sm font-medium mb-2">
+    	          {selectedResumeId === "new" ? "Create new or overwrite existing" : "Overwriting"}
+    	        </label>
+    	        <Select
+    	          title={selectedResumeId === "new" ? "Create New" : resumes.find(r => r.id === selectedResumeId)?.name || "Select Resume"}
+    	          defaultValue={selectedResumeId}
+    	          options={[["new", "Create New"], ...options]}
+    	          handleSetValue={setSelectedResumeId}
+    	        />
+    	      </div>
+    	      {selectedResumeId === "new" && (
+    	        <div>
+    	          <label className="block text-sm font-medium mb-2">Resume Name</label>
+    	          <input
+    	            type="text"
+    	            value={name}
+    	            placeholder={"Name (e.g., 'ux designer')"}
+    	            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    	              setName(e.target.value);
+    	            }}
+    	            className="w-full text-sm border p-2 rounded"
+    	          />
+    	        </div>
+    	      )}
+    	      <div className="flex justify-end gap-2 mt-4">
+    	        <Button variant="ghost" onClick={cancelPinning}>Cancel</Button>
+    	        <Button onClick={pinResume}>Save</Button>
+    	      </div>
+    	    </div>
+    	  </div>
+    	</Modal>
+    </>
   )
 }
