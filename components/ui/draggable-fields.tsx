@@ -210,7 +210,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
                       updateField(index, { value: sanitized }, true);
                     }}
                     data-placeholder={field.label || "Type some text..."}
-                    className={`flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""} empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400`}
+                    className={`font-serif flex-1 w-full px-3 py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.classnames?.join(" ") || ""} empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400`}
                   />
                 </div>
               </div>

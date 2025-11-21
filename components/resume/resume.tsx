@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+import { CornerRightDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/download-button";
 import { PinnedResumes } from "@/components/resume/pinned-resumes";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { ContactInfo } from "@/components/resume/contact-info";
@@ -170,14 +172,21 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <div className="flex flex-row justify-start items-center">
-          <h2 className="text-lg">Update Your Resumé</h2>
+          <h2 className="text-lg flex flex-row items-center">Your Resumé<CornerRightDown size={18} /></h2>
           <Button
             onClick={() => setMode(prev => prev === "edit" ? "preview" : "edit")}
             variant="ghost"
+            className="text-blue-600"
           >
             {mode === "edit" ? "Preview" : "Edit"} Resumé
           </Button>
         </div>
+
+        <div className="flex flex-row justify-start items-center">
+          <h3 className="text-lg">Download:</h3>
+          <DownloadButton fileType="html" userId={userId} data={persistedData} loadedResume={activeResume} />
+        </div>
+
         <Suspense fallback={<div>Loading pinned resumés...</div>}>
           <PinnedResumes userId={userId} />
         </Suspense>

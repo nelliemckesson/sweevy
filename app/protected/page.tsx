@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X, Brush, SquarePen, ChevronsUp, ChevronsDown, CopyPlus } from 'lucide-react';
 import { setResume, fetchResume, fetchResumeByName, refreshData } from "@/app/actions/db";
-import { DownloadButton } from "@/components/download-button";
 import { Resume } from "@/components/resume/resume";
 
 export default async function ProtectedPage({
@@ -49,11 +48,6 @@ export default async function ProtectedPage({
     <div className="flex-1 w-full flex flex-col md:flex-row p-5 gap-3">
 
       <div className="w-full md:w-96">
-        <h2 className="text-lg mb-3">Download Your Resumé</h2>
-        <div className="flex flex-row gap-4 mb-5">
-          <DownloadButton fileType="html" userId={user.sub} loadedResume={loadedResume} />
-        </div>
-
         <details open>
           <summary className="text-lg mb-5 cursor-pointer hover:opacity-70 transition-opacity">
             Guide

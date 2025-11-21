@@ -2,6 +2,7 @@
 
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { Field, ResumeField } from "@/lib/types";
+import { createHtmlDownload } from "@/lib/formatting_utils";
 import { Button } from "@/components/ui/button";
 import { fetchAllData } from "@/app/actions/db";
 
@@ -17,16 +18,13 @@ interface ResumeData {
 interface DownloadButtonProps {
   userId: string;
   fileType: "html" | "docx";
+  data: any[];
   loadedResume: ResumeField;
 }
 
-export function DownloadButton({ userId, fileType, loadedResume }: DownloadButtonProps): JSX.Element {
+export function DownloadButton({ userId, fileType, data, loadedResume }: DownloadButtonProps): JSX.Element {
   const handleDownload = async (): Promise<void> => {
     try {
-      const data = await fetchAllData(userId) as ResumeData | null;
-
-      if (!data) return;
-
       let blob: Blob;
       let downloadName: string;
 
@@ -61,23 +59,7 @@ export function DownloadButton({ userId, fileType, loadedResume }: DownloadButto
         downloadName = `resume-${suffix}.html`;
         // since we don't need to transform the html,
         // we can just use simple strings.
-        const html: string[] = ["<html>", "<body>"];
-
-        data.contactinfo.forEach(item => {
-          if (item.label === "Name") {
-            html.push(`<h1>${item.value}</h1>`);
-          } else {
-            html.push(`<p class="contact">${item.value}</p>`);
-          }
-        });
-
-        html.push("<h2>Skills</h2>");
-
-        data.skills.forEach(item => {
-          html.push(`<p class="skills">${item.value}</p>`);
-        });
-
-        html.push("</body>", "</html>");
+        const html = createHtmlDownload(data, loadedResume);
         blob = new Blob(html, { type: "text/html" });
       } else {
         return; // unsupported file type
