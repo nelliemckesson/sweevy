@@ -53,6 +53,11 @@ export default async function ProtectedPage({
             Guide
           </summary>
           <div>
+            <p>
+              Edit your resume. Create or adjust your job description bullet points for specific job applications, 
+              and only include the applicable bullets when you download your resume to apply 
+              for a job. Pin a version to save your bullet point settings for quick loading.
+            </p>
             <p className="flex flex-row items-start gap-1 mb-1">
               <ChevronsUp size={20} /><ChevronsDown size={20} /> Click to move an entire section up or down
             </p>

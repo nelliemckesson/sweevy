@@ -1,11 +1,11 @@
+import { Document, Packer, Paragraph, TextRun } from "docx";
+
 export function preformatData(item, data, activeResume) {
 	const defaultTitles = {
     skills: "Skills",
     roles: "Experience",
     educations: "Education"
   }
-
-  console.log(data);
 
 	let sectionData = data[item];
 
@@ -180,10 +180,7 @@ export function createHtmlDownload(data, activeResume) {
   	"<body>"
   ];
 
-  console.log(data);
-
   activeResume?.fields?.positions.map((item, index) => {
-    console.log(item);
     
     let {sectionTitle, classnames, subitems} = preformatData(item, data, activeResume);
 
@@ -236,4 +233,261 @@ export function createHtmlDownload(data, activeResume) {
 
   html.push("</body>", "</html>");
   return html;
+}
+
+function flattenSpans(value: string): string[] {
+	// resolve nested spans into a flat structure:
+  // Find <span class="bold">this <span class="italic">text</span> here</span>. => Find <span class="bold">this </span><span class="bold italic">text</span><span class="bold"> here</span>.
+
+  interface SpanSegment {
+    text: string;
+    classes: string[];
+  }
+
+  // Helper to extract class names from a span tag
+  function extractClasses(spanTag: string): string[] {
+    const classMatch = spanTag.match(/class=["']([^"']*)["']/);
+    if (!classMatch) return [];
+    return classMatch[1].split(/\s+/).filter(c => c.length > 0);
+  }
+
+  // Recursive function to parse and flatten spans
+  function parseSpans(html: string, parentClasses: string[] = []): SpanSegment[] {
+    const segments: SpanSegment[] = [];
+    let pos = 0;
+
+    while (pos < html.length) {
+      const nextSpanStart = html.indexOf('<span', pos);
+
+      if (nextSpanStart === -1) {
+        // No more spans, add remaining text
+        const remainingText = html.substring(pos);
+        if (remainingText.length > 0) {
+          segments.push({ text: remainingText, classes: parentClasses });
+        }
+        break;
+      }
+
+      // Add text before the span
+      if (nextSpanStart > pos) {
+        const textBefore = html.substring(pos, nextSpanStart);
+        segments.push({ text: textBefore, classes: parentClasses });
+      }
+
+      // Find the end of the opening span tag
+      const spanTagEnd = html.indexOf('>', nextSpanStart);
+      if (spanTagEnd === -1) break;
+
+      const spanTag = html.substring(nextSpanStart, spanTagEnd + 1);
+      const spanClasses = extractClasses(spanTag);
+      const combinedClasses = [...parentClasses, ...spanClasses];
+
+      // Find the matching closing tag
+      let depth = 1;
+      let searchPos = spanTagEnd + 1;
+      let closingTagPos = -1;
+
+      while (searchPos < html.length && depth > 0) {
+        const nextOpen = html.indexOf('<span', searchPos);
+        const nextClose = html.indexOf('</span>', searchPos);
+
+        if (nextClose === -1) break;
+
+        if (nextOpen !== -1 && nextOpen < nextClose) {
+          depth++;
+          searchPos = nextOpen + 5;
+        } else {
+          depth--;
+          if (depth === 0) {
+            closingTagPos = nextClose;
+          }
+          searchPos = nextClose + 7;
+        }
+      }
+
+      if (closingTagPos === -1) {
+        // Malformed HTML, treat rest as text
+        segments.push({ text: html.substring(nextSpanStart), classes: parentClasses });
+        break;
+      }
+
+      // Parse the content inside the span recursively
+      const spanContent = html.substring(spanTagEnd + 1, closingTagPos);
+      const innerSegments = parseSpans(spanContent, combinedClasses);
+      segments.push(...innerSegments);
+
+      pos = closingTagPos + 7; // Move past </span>
+    }
+
+    return segments;
+  }
+
+  // Parse the HTML into segments
+  const segments = parseSpans(value);
+
+  // Reconstruct as flat HTML; return as array
+  // return segments.map(seg => {
+  //   if (seg.classes.length === 0) {
+  //     return {text: seg.text};
+  //   }
+  //   return {classes: seg.classes, text: seg.text};
+  // });
+  return segments;
+}
+
+interface DocxObject {
+  text: string;
+  italic?: boolean;
+  bold?: boolean;
+  underline?: object;
+  alignment?: any;
+  fontsize7?: number;
+  fontsize8?: number;
+  fontsize9?: number;
+  fontsize10?: number;
+  fontsize11?: number;
+  fontsize12?: number;
+  fontsize14?: number;
+  fontsize18?: number;
+  fontsize24?: number;
+  fontsize30?: number;
+  fontsize36?: number;
+  fontsize48?: number;
+  fontsize60?: number;
+  fontsize72?: number;
+  fontsize96?: number;
+}
+
+function buildDocxObject(value: string, classes: string[]): DocxObject {
+	let obj = {text: value};
+	classes.map(c => {
+		switch (c) {
+  		case "italic":
+  			obj.italics = true;
+  			break;
+  		case "bold":
+  			obj.bold = true;
+  			break;
+  		case "underline":
+  			obj.underline = {type="single", color="black"};
+  			break;
+  		case "alignleft":
+  			obj.alignment = AlignmentType.LEFT;
+  			break;
+  		case "aligncenter":
+  			obj.alignment = AlignmentType.CENTER;
+  			break;
+  		case "alignright":
+  			obj.alignment = AlignmentType.RIGHT;
+  			break;
+  		case "alignjustify":
+  			obj.alignment = AlignmentType.JUSTIFIED;
+  			break;
+  		case "fontsize7":
+  			obj.size = 14;
+  			break;
+  		case "fontsize8":
+  			obj.size = 16;
+  			break;
+  		case "fontsize9":
+  			obj.size = 18;
+  			break;
+  		case "fontsize10":
+  			obj.size = 20;
+  			break;
+  		case "fontsize11":
+  			obj.size = 22;
+  			break;
+  		case "fontsize12":
+  			obj.size = 24;
+  			break;
+  		case "fontsize14":
+  			obj.size = 28;
+  			break;
+  		case "fontsize18":
+  			obj.size = 36;
+  			break;
+  		case "fontsize24":
+  			obj.size = 48;
+  			break;
+  		case "fontsize30":
+  			obj.size = 60;
+  			break;
+  		case "fontsize36":
+  			obj.size = 72;
+  			break;
+  		case "fontsize48":
+  			obj.size = 96;
+  			break;
+  		case "fontsize60":
+  			obj.size = 120;
+  			break;
+  		case "fontsize72":
+  			obj.size = 144;
+  			break;
+  		case "fontsize96":
+  			obj.size = 192;
+  			break;
+  		default:
+  			break;
+  	}
+  });
+	return obj;
+}
+
+function makeParagraph(segments: any[], classnames: string[]) {
+	const para = new Paragraph({
+    children: segments.map(seg => {
+    	let span = {text: seg.text};
+    	classnames.map(c => {
+
+    	})
+    	seg.
+      return new TextRun(span);
+    });
+  });
+	return para;
+}
+
+export function createDocxDownload(data, activeResume) {
+	let paras = [];
+
+	activeResume?.fields?.positions.map((item, index) => {
+    
+    let {sectionTitle, classnames, subitems} = preformatData(item, data, activeResume);
+
+    // Create a heading paragraph for the section title
+    if (sectionTitle) {
+    	let sectionTitleSegments = flattenSpans(sectionTitle);
+    	const titlePara = new Paragraph({
+        children: sectionTitleSegments.map(seg => {
+        	let span = buildDocxObject(seg.text, seg.classes);
+          return new TextRun(span);
+        });
+      });
+    }
+
+
+
+
+    if (value.match("<span")) {    	
+    	// create a text run for each span
+    }
+
+  });
+
+  // const doc = new Document({
+  //   sections: [{
+  //     properties: {},
+  //     children: [
+  //       new Paragraph({
+  //         children: [
+  //           new TextRun("This is placeholder text for your resume."),
+  //         ],
+  //       }),
+  //     ],
+  //   }],
+  // });
+  blob = await Packer.toBlob(doc);
+	return blob;
 }

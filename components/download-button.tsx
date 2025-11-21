@@ -1,6 +1,5 @@
 "use client";
 
-import { Document, Packer, Paragraph, TextRun } from "docx";
 import { Field, ResumeField } from "@/lib/types";
 import { createHtmlDownload } from "@/lib/formatting_utils";
 import { Button } from "@/components/ui/button";
@@ -30,31 +29,15 @@ export function DownloadButton({ userId, fileType, data, loadedResume }: Downloa
 
       const d = new Date();
       let suffix = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-      console.log(suffix);
 
       if (loadedResume.name !== "default") {
         const sanitizedName = loadedResume.name.replace(/[^a-z0-9A-Z_-]/gim).trim();
         suffix = `${sanitizedName}-${suffix}`;
       }
 
-      // TO DO: Get docx export working
-      // if (fileType === "docx") {
       //   downloadName = "sweevy-resume.docx";
-      //   const doc = new Document({
-      //     sections: [{
-      //       properties: {},
-      //       children: [
-      //         new Paragraph({
-      //           children: [
-      //             new TextRun("This is placeholder text for your resume."),
-      //           ],
-      //         }),
-      //       ],
-      //     }],
-      //   });
-      //   blob = await Packer.toBlob(doc);
-      // } else
 
+      // if (fileType === "docx") {
       if (fileType === "html") {
         downloadName = `resume-${suffix}.html`;
         // since we don't need to transform the html,
