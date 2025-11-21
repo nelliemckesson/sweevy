@@ -375,6 +375,9 @@ function buildDocxObject(value: string, classes: string[], base: DocxObject): Do
   		case "underline":
   			obj.underline = {type: "single", color: "000000"};
   			break;
+  		case "uppercase":
+  			obj.allCaps = true;
+  			break;
   		case "alignleft":
   			obj.alignment = AlignmentType.LEFT;
   			break;
@@ -452,6 +455,11 @@ function makeParagraph(item: any[], index: number, classnames: string[], level: 
   	obj.bullet = {level};
   }
 
+  // add spacing if required (first item in section only)
+  if (index === 0 && classnames.indexOf("spaceBefore") > -1) {
+  	obj.spacing = {before: convertInchesToTwip(0.25)};
+  }
+
 	let paraStyles = {};
 	if (classnames.length > 0) {
 		paraStyles = buildDocxObject("", classnames, {});
@@ -482,11 +490,13 @@ export async function createDocxDownload(data, activeResume) {
 	let paras = [];
 
 	activeResume?.fields?.positions.map((item, index) => {
+		let shouldAddSpaceBefore = true;
     
     let {sectionTitle, classnames, subitems} = preformatData(item, data, activeResume);
 
     // Create a heading paragraph for the section title
     if (sectionTitle) {
+    	shouldAddSpaceBefore = false;
     	let sectionTitleSegments = flattenSpans(sectionTitle);
     	let paraStyles = {};
     	if (classnames.length > 0) {
@@ -515,6 +525,10 @@ export async function createDocxDownload(data, activeResume) {
         subSubitems = subitem.educationitems;
       }
       subSubitems = subSubitems.filter(subSubitem => subSubitem.include);
+
+      if (shouldAddSpaceBefore) {
+      	subClassnames.push("spaceBefore");
+      }
 
       const para = makeParagraph(subitem, subindex, subClassnames, 0);
       paras.push(para);

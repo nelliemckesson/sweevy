@@ -16,12 +16,10 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP:
-// remove border styles (not supported in docx export)
-// add allcaps style
-// don't allow align styles on spans selections
+// save changes to pinned resume
+// don't allow align styles on spans selections?
 // Include section titles and positions in pinned resumes?
 // test pinned resumes again
-// Download .docx
 // Subscription plans
 // Better landing page
 // Rate limiting

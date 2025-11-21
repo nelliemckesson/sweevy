@@ -11,7 +11,8 @@ import {
   TextAlignCenter,
   TextAlignEnd,
   TextAlignJustify,
-  SquareDashedTopSolid
+  SquareDashedTopSolid,
+  CaseUpper
 } from 'lucide-react';
 import { Field, FormProps } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -163,6 +164,16 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         </button>
 
         <button
+          onClick={() => toggleClassname('uppercase')}
+          className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
+            hasClassname('uppercase') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
+          }`}
+          aria-label="Uppercase"
+        >
+          <CaseUpper size={18} />
+        </button>
+
+        <button
           onClick={() => toggleClassname('bullet')}
           className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
             hasClassname('bullet') ? 'text-blue-500 bg-blue-50' : 'text-gray-400'
@@ -236,7 +247,40 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         </select>
       </div>
 
-      <div className="flex flex-row mb-4">
+      <div className="flex flex-row gap-2 items-center w-full px-3 py-2 mb-4">
+        {classnames?.indexOf("bullet") > -1 && (
+          <span className="text-2xl">&#8226;</span>
+        )}
+        {classnames?.indexOf("numbered") > -1 && (
+          <span className="">1. </span>
+        )}
+        <div
+          ref={previewRef}
+          contentEditable
+          suppressContentEditableWarning
+          className={`w-full ${classnames.join(" ")}`}
+          style={{ userSelect: 'text', cursor: 'text' }}
+          dangerouslySetInnerHTML={{ __html: value }}
+          onInput={(e: React.FormEvent<HTMLDivElement>) => {
+            const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
+            setValue(sanitized);
+          }}
+        />
+      </div>
+
+      <Button onClick={() => onSave && onSave(classnames, value)}>Save</Button>
+
+      <div className={`hidden opacity-0 italic bold underline alignleft 
+        aligncenter alignright alignjustify bordertop borderright borderbottom 
+        borderleft fontsize8 fontsize9 fontsize10 fontsize11 fontsize12 fontsize14 
+        fontsize18 fontsize24 fontsize30 fontsize36 fontsize48 fontsize60 fontsize72 
+        fontsize96 fontsize7`}>Tailwind override</div>
+    </div>
+  );
+}
+
+// Borders:
+{/*<div className="flex flex-row mb-4">
         <button
           onClick={() => toggleClassname('bordertop')}
           className={`opacity-1 p-2 md:hover:text-blue-500 hover:bg-blue-50 rounded ${
@@ -273,36 +317,4 @@ export function DesignToolbar({ field, onUpdate, onSave }: DesignToolbarProps): 
         >
           <SquareDashedTopSolid size={18} />
         </button>
-      </div>
-
-      <div className="flex flex-row gap-2 items-center w-full px-3 py-2 mb-4">
-        {classnames?.indexOf("bullet") > -1 && (
-          <span className="text-2xl">&#8226;</span>
-        )}
-        {classnames?.indexOf("numbered") > -1 && (
-          <span className="">1. </span>
-        )}
-        <div
-          ref={previewRef}
-          contentEditable
-          suppressContentEditableWarning
-          className={`w-full ${classnames.join(" ")}`}
-          style={{ userSelect: 'text', cursor: 'text' }}
-          dangerouslySetInnerHTML={{ __html: value }}
-          onInput={(e: React.FormEvent<HTMLDivElement>) => {
-            const sanitized = sanitizeInput(e.currentTarget.innerHTML, true);
-            setValue(sanitized);
-          }}
-        />
-      </div>
-
-      <Button onClick={() => onSave && onSave(classnames, value)}>Save</Button>
-
-      <div className={`hidden opacity-0 italic bold underline alignleft 
-        aligncenter alignright alignjustify bordertop borderright borderbottom 
-        borderleft fontsize8 fontsize9 fontsize10 fontsize11 fontsize12 fontsize14 
-        fontsize18 fontsize24 fontsize30 fontsize36 fontsize48 fontsize60 fontsize72 
-        fontsize96 fontsize7`}>Tailwind override</div>
-    </div>
-  );
-}
+      </div>*/}
