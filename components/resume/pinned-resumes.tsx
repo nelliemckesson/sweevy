@@ -160,7 +160,7 @@ export function PinnedResumes({ userId }: { userId: string }): JSX.Element {
 		  		  	<Button className="text-sm" variant="ghost" onClick={pinResume}>Save</Button>
 		  		  </div>
 		  		) : (
-		  		  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}><Pin size={20} />Pin this Resumé</Button>
+		  		  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}><Pin size={20} />Pin</Button>
 		  		)}
 		  	</div>
 		  	<TextPopup content={infoText}>

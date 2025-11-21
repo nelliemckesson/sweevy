@@ -183,11 +183,17 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
           >
             {mode === "edit" ? "Preview" : "Edit"} Resumé
           </Button>
+          <DownloadButton 
+            fileType="html" 
+            userId={userId} 
+            data={persistedData} 
+            loadedResume={activeResume} 
+          />
+          <DownloadButton fileType="docx" userId={userId} data={persistedData} loadedResume={activeResume} />
         </div>
 
         <div className="flex flex-row justify-start items-center">
-          <h3 className="text-lg">Download:</h3>
-          <DownloadButton fileType="html" userId={userId} data={persistedData} loadedResume={activeResume} />
+          
         </div>
 
         <Suspense fallback={<div>Loading pinned resumés...</div>}>

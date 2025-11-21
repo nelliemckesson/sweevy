@@ -1,4 +1,12 @@
-import { Document, Packer, Paragraph, TextRun } from "docx";
+import { 
+	Document, 
+	Packer, 
+	Paragraph, 
+	TextRun, 
+	AlignmentType, 
+	HeadingLevel, 
+	convertInchesToTwip 
+} from "docx";
 
 export function preformatData(item, data, activeResume) {
 	const defaultTitles = {
@@ -325,18 +333,11 @@ function flattenSpans(value: string): string[] {
   // Parse the HTML into segments
   const segments = parseSpans(value);
 
-  // Reconstruct as flat HTML; return as array
-  // return segments.map(seg => {
-  //   if (seg.classes.length === 0) {
-  //     return {text: seg.text};
-  //   }
-  //   return {classes: seg.classes, text: seg.text};
-  // });
   return segments;
 }
 
 interface DocxObject {
-  text: string;
+  text?: string;
   italic?: boolean;
   bold?: boolean;
   underline?: object;
@@ -358,8 +359,11 @@ interface DocxObject {
   fontsize96?: number;
 }
 
-function buildDocxObject(value: string, classes: string[]): DocxObject {
-	let obj = {text: value};
+function buildDocxObject(value: string, classes: string[], base: DocxObject): DocxObject {
+	let obj = { ...base };
+	if (value) {
+		obj.text = value;
+	}
 	classes.map(c => {
 		switch (c) {
   		case "italic":
@@ -369,7 +373,7 @@ function buildDocxObject(value: string, classes: string[]): DocxObject {
   			obj.bold = true;
   			break;
   		case "underline":
-  			obj.underline = {type="single", color="black"};
+  			obj.underline = {type: "single", color: "000000"};
   			break;
   		case "alignleft":
   			obj.alignment = AlignmentType.LEFT;
@@ -435,21 +439,46 @@ function buildDocxObject(value: string, classes: string[]): DocxObject {
 	return obj;
 }
 
-function makeParagraph(segments: any[], classnames: string[]) {
-	const para = new Paragraph({
-    children: segments.map(seg => {
-    	let span = {text: seg.text};
-    	classnames.map(c => {
+function makeParagraph(item: any[], index: number, classnames: string[], level: number) {
+	let obj = {};
 
-    	})
-    	seg.
-      return new TextRun(span);
-    });
+  // If it's the name, set it as a heading
+  if (item.label === "Name") {
+  	obj.heading = HeadingLevel.HEADING_1;
+  }
+
+  // use real bullets
+  if (classnames.indexOf("bullet") > -1) {
+  	obj.bullet = {level};
+  }
+
+	let paraStyles = {};
+	if (classnames.length > 0) {
+		paraStyles = buildDocxObject("", classnames, {});
+	}
+
+	let paraSegments = flattenSpans(item.value);
+
+	// manually insert numbers for now
+	if (classnames.indexOf("numbered") > -1) {
+		paraSegments.unshift({text: `${index+1}. `, classes: []});
+	}
+
+	let runs = paraSegments.map(seg => {
+  	let span = buildDocxObject(seg.text, seg.classes, paraStyles);
+    return new TextRun(span);
   });
-	return para;
+
+  const para = new Paragraph({
+  	...obj, 
+  	...paraStyles, 
+  	children: runs
+  });
+
+  return para;
 }
 
-export function createDocxDownload(data, activeResume) {
+export async function createDocxDownload(data, activeResume) {
 	let paras = [];
 
 	activeResume?.fields?.positions.map((item, index) => {
@@ -459,35 +488,58 @@ export function createDocxDownload(data, activeResume) {
     // Create a heading paragraph for the section title
     if (sectionTitle) {
     	let sectionTitleSegments = flattenSpans(sectionTitle);
-    	const titlePara = new Paragraph({
-        children: sectionTitleSegments.map(seg => {
-        	let span = buildDocxObject(seg.text, seg.classes);
-          return new TextRun(span);
-        });
+    	let paraStyles = {};
+    	if (classnames.length > 0) {
+    		paraStyles = buildDocxObject("", classnames, {});
+    	}
+    	let runs = sectionTitleSegments.map(seg => {
+      	let span = buildDocxObject(seg.text, seg.classes, paraStyles);
+        return new TextRun(span);
       });
+    	const titlePara = new Paragraph({
+    		...paraStyles,
+    		spacing: {before: convertInchesToTwip(0.25)},
+    		heading: HeadingLevel.HEADING_1,
+        children: runs,
+      })
+      paras.push(titlePara);
     }
 
+    subitems = subitems.map((subitem, subindex) => {
+      let subClassnames = subitem.classnames || [];
 
+      let subSubitems = [];
+      if (item === "roles") {
+        subSubitems = subitem.roleitems;
+      } else if (item === "educations") {
+        subSubitems = subitem.educationitems;
+      }
+      subSubitems = subSubitems.filter(subSubitem => subSubitem.include);
 
+      const para = makeParagraph(subitem, subindex, subClassnames, 0);
+      paras.push(para);
 
-    if (value.match("<span")) {    	
-    	// create a text run for each span
-    }
+      subSubitems.map((subSubitem, subSubindex) => {
+      	// only increase bullet level if parent is also bulleted
+      	let level = 0;
+      	if (subClassnames.indexOf("bullet") > -1) {
+      		level = 1;
+      	}
+      	let subSubClassnames = subSubitem.classnames || [];
+      	const para = makeParagraph(subSubitem, subSubindex, subSubClassnames, level);
+      	paras.push(para);
+	    })
+	  });
 
   });
 
-  // const doc = new Document({
-  //   sections: [{
-  //     properties: {},
-  //     children: [
-  //       new Paragraph({
-  //         children: [
-  //           new TextRun("This is placeholder text for your resume."),
-  //         ],
-  //       }),
-  //     ],
-  //   }],
-  // });
-  blob = await Packer.toBlob(doc);
+  const doc = new Document({
+    sections: [{
+      properties: {},
+      children: paras,
+    }],
+  });
+
+  let blob = await Packer.toBlob(doc);
 	return blob;
 }

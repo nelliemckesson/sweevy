@@ -1,7 +1,8 @@
 "use client";
 
+import { Download } from 'lucide-react';
 import { Field, ResumeField } from "@/lib/types";
-import { createHtmlDownload } from "@/lib/formatting_utils";
+import { createHtmlDownload, createDocxDownload } from "@/lib/formatting_utils";
 import { Button } from "@/components/ui/button";
 import { fetchAllData } from "@/app/actions/db";
 
@@ -37,16 +38,18 @@ export function DownloadButton({ userId, fileType, data, loadedResume }: Downloa
 
       //   downloadName = "sweevy-resume.docx";
 
-      // if (fileType === "docx") {
-      if (fileType === "html") {
+      if (fileType === "docx") {
+        downloadName = `resume-${suffix}.docx`;
+        blob = await createDocxDownload(data, loadedResume)
+      } else if (fileType === "html") {
         downloadName = `resume-${suffix}.html`;
-        // since we don't need to transform the html,
-        // we can just use simple strings.
         const html = createHtmlDownload(data, loadedResume);
         blob = new Blob(html, { type: "text/html" });
       } else {
         return; // unsupported file type
       }
+
+      console.log(blob);
 
       // create download link and trigger it
       const url = URL.createObjectURL(blob);
@@ -63,8 +66,8 @@ export function DownloadButton({ userId, fileType, data, loadedResume }: Downloa
   };
 
   return (
-    <Button variant="secondary" onClick={handleDownload}>
-      {fileType}
+    <Button variant="ghost" className="text-blue-600" onClick={handleDownload}>
+      <Download size={18}/> {fileType}
     </Button>
   );
 }

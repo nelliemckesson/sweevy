@@ -42,7 +42,7 @@ export function Preview({persistedData, loadedResume}): Promise<JSX.Element> {
           }
           subSubitems = subSubitems.filter(subSubitem => subSubitem.include);
           return (
-            <div>
+            <div key={`sub${subindex}`}>
               <div className="font-serif flex flex-row justify-start items-center">
                 {subClassnames.indexOf("bullet") > -1 && (
                   <span className={subClassnames.join(" ")}>&#8226;&nbsp;</span>
@@ -57,7 +57,7 @@ export function Preview({persistedData, loadedResume}): Promise<JSX.Element> {
               </div>
               {subSubitems.map((subSubitem, subSubindex) => {
                 return (
-                  <div className="font-serif flex flex-row justify-start items-center">
+                  <div key={`subsub${subSubindex}`} className="font-serif flex flex-row justify-start items-center">
                     {subSubitem.classnames?.indexOf("bullet") > -1 && (
                       <span className={subSubitem.classnames?.join(" ")}>&#8226;&nbsp;</span>
                     )}
@@ -76,7 +76,7 @@ export function Preview({persistedData, loadedResume}): Promise<JSX.Element> {
         });
 
         return (
-          <div className="font-serif mt-3">
+          <div key={index} className="font-serif mt-3">
           {sectionTitle && (
             <h2 
               className={`text-xl ${classnames.join(" ")}`}
