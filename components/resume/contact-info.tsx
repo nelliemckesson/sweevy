@@ -25,7 +25,7 @@ export function ContactInfo({
   useEffect(() => {
     const fetchData = async () => {
       let loadedData = await fetchContactInfo(userId);
-      loadedData = adjustData(loadedData, loadedResume, "contactinfo");
+      loadedData = adjustData(loadedData, loadedResume, "contactinfos", null);
       setData(loadedData);
       handleSetPersistedData(prev => ({...prev, contactinfos: loadedData}));
     }

@@ -29,16 +29,21 @@ export function ContactInfoForm({ userId, fields: initialFields }: FormProps): J
   const handleSave = useCallback(async (): Promise<void> => {
     if (isSaving) return;
 
-    console.log("saving");
-
     setIsSaving(true);
 
     try {
       // clean all fields (remove 'changed' property)
       const cleanedFields = fields.map(({ changed, ...rest }) => rest);
+      // add ids for all fields
+      const fieldsWithId = cleanedFields.map(field => {
+        if (!field.hasOwnProperty("id")) {
+          field.id = crypto.randomUUID();
+        }
+        return field;
+      });
 
       // save entire fields array at once
-      const savedFields = await setContactInfo(userId, cleanedFields);
+      const savedFields = await setContactInfo(userId, fieldsWithId);
 
       if (savedFields) {
         setFields(savedFields);

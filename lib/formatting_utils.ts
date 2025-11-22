@@ -17,6 +17,12 @@ export function preformatData(item, data, activeResume) {
 
 	let sectionData = data[item];
 
+	if (item.startsWith("customsection")) {
+		sectionData = data[item][0];
+	}
+
+	console.log(sectionData);
+
   let sectionTitle = undefined;
   // if sectionData contains name, use that
   if (sectionData.name) {
@@ -28,6 +34,8 @@ export function preformatData(item, data, activeResume) {
   } else if (defaultTitles.hasOwnProperty(item)) {
     sectionTitle = defaultTitles[item];
   }
+
+  console.log(sectionTitle);
 
   let classnames = [];
   // if sectionData contains classnames, use that
@@ -43,6 +51,8 @@ export function preformatData(item, data, activeResume) {
   if (sectionData.hasOwnProperty("customsectionitems")) {
     subitems = sectionData.customsectionitems;
   }
+
+  console.log(subitems);
 
   subitems = subitems.filter(subitem => subitem.include)
 	return {sectionTitle, classnames, subitems};

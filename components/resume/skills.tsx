@@ -71,7 +71,7 @@ export function Skills({
   useEffect(() => {
     const fetchData = async () => {
       let loadedData = await fetchSkills(userId);
-      loadedData = adjustData(loadedData, loadedResume, "skills");
+      loadedData = adjustData(loadedData, loadedResume, "skills", null);
       setData(loadedData);
       handleSetPersistedData(prev => ({...prev, skills: loadedData}));
       // if section has a custom name, use it

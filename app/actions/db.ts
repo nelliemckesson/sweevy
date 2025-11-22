@@ -83,7 +83,7 @@ export async function setResume(userId: string, fields: object): Promise<ResumeF
 export async function fetchContactInfo(userId: string): Promise<Field[] | null> {
   const supabase = await createClient();
 
-  const { data: contactinfo, error } = await supabase
+  const { data: contactinfos, error } = await supabase
     .from('contactinfo')
     .select('fields')
     .eq('user', userId)
@@ -94,7 +94,7 @@ export async function fetchContactInfo(userId: string): Promise<Field[] | null> 
     return null;
   }
 
-  return contactinfo?.fields.sort((a, b) => a.position - b.position) ?? null;
+  return contactinfos?.fields.sort((a, b) => a.position - b.position) ?? null;
 }
 
 export async function setContactInfo(userId: string, fields: Field[]): Promise<Field[] | null> {

@@ -31,13 +31,13 @@ export function adjustData(data: Field[], loadedResume: ResumeField, field: stri
   if (loadedResume.fields.hasOwnProperty(field)) {
     let fields = loadedResume.fields[field];
     for (let i=0; i<data.length; i++) {
-      if (fields.hasOwnProperty(data[i].id)) {
+      if (fields.hasOwnProperty(data[i].id.toString())) {
         data[i].include = true;
         data[i].position = fields[data[i].id.toString()].position;
         if (subField) {
           for (let j=0; j<data[i][subField].length; j++) {
             let item = data[i][subField][j];
-            if (fields[data[i].id.toString()].subitems.hasOwnProperty(item.id)) {
+            if (fields[data[i].id.toString()].subitems.hasOwnProperty(item.id.toString())) {
               item.include = true;
               item.position = fields[data[i].id.toString()].subitems[item.id.toString()].position;
             } else {

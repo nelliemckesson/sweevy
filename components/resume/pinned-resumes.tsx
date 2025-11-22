@@ -183,7 +183,7 @@ export function PinnedResumes({
         />
         <div className="flex flex-row justify-start items-center">
 		  	  <Button className="text-sm pl-0 md:pl-4" variant="ghost" onClick={togglePinning}>
-		  	    <Pin size={20} />Pin
+		  	    <Pin size={20} />Pin/Update
 		  	  </Button>
 		  	  <TextPopup content={infoText}>
 	          <Button className="p-0" variant="ghost"><Info size={20} /></Button>

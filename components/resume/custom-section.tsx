@@ -85,8 +85,8 @@ export function CustomSection({
   useEffect(() => {
     const fetchData = async () => {
       let loadedData = await fetchCustomSection(sectionId);
-      loadedData = adjustData(loadedData, loadedResume, `customsection-${sectionId}`, "customsectionitems");
-      setData(loadedData);
+      loadedData = adjustData([loadedData], loadedResume, `customsections`, "customsectionitems");
+      setData(loadedData[0]);
       handleSetPersistedData(prev => ({...prev, [`customsection-${sectionId}`]: loadedData}));
     }
     if (shouldLoadData) {
