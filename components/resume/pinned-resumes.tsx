@@ -193,7 +193,7 @@ export function PinnedResumes({
 
     	<Modal isOpen={pinning} onClose={cancelPinning}>
     	  <div className="p-6">
-    	    <h2 className="text-xl font-semibold mb-4">Pin Resume</h2>
+    	    <h2 className="text-xl font-semibold mb-4">Pin Resumé</h2>
     	    <div className="flex flex-col gap-4">
     	      <div>
     	        <label className="block text-sm font-medium mb-2">
@@ -208,7 +208,7 @@ export function PinnedResumes({
     	      </div>
     	      {selectedResumeId === "new" && (
     	        <div>
-    	          <label className="block text-sm font-medium mb-2">Resume Name</label>
+    	          <label className="block text-sm font-medium mb-2">Resumé Name</label>
     	          <input
     	            type="text"
     	            value={name}

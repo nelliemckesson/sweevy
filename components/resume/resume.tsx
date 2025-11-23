@@ -16,12 +16,11 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
 // MVP (f&f):
+// heavy-test pinned resumes
 // update persistedData when adjusting styling
 // update persistedData when setting "include"
-// loading pinned resume should change checkbox states and positions, etc.
 // delete a pinned resume?
 // don't allow align styles on spans selections?
-// Include section titles and positions in pinned resumes?
 // Better landing page
 // Rate limiting
 // Import a resume (docx)

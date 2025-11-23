@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GripVertical, X, Brush, SquarePen, ChevronsUp, ChevronsDown, CopyPlus } from 'lucide-react';
 import { setResume, fetchResume, fetchResumeByName, refreshData } from "@/app/actions/db";
+import { DocxImport } from "@/components/resume/docx-import";
 import { Resume } from "@/components/resume/resume";
 
 export default async function ProtectedPage({
@@ -48,16 +49,19 @@ export default async function ProtectedPage({
     <div className="flex-1 w-full flex flex-col md:flex-row p-5 gap-3">
 
       <div className="w-full md:w-96">
+        <p className="mb-3">
+          Edit your resume. Create or adjust your job description bullet points for specific job applications, 
+          and only include the applicable bullets when you download your resume to apply 
+          for a job. Pin a version to save your bullet point settings for quick loading.
+        </p>
+
+        <DocxImport />
+
         <details open>
           <summary className="text-lg mb-5 cursor-pointer hover:opacity-70 transition-opacity">
             Guide
           </summary>
           <div>
-            <p>
-              Edit your resume. Create or adjust your job description bullet points for specific job applications, 
-              and only include the applicable bullets when you download your resume to apply 
-              for a job. Pin a version to save your bullet point settings for quick loading.
-            </p>
             <p className="flex flex-row items-start gap-1 mb-1">
               <ChevronsUp size={20} /><ChevronsDown size={20} /> Click to move an entire section up or down
             </p>
