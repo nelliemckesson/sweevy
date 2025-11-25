@@ -7,6 +7,7 @@ import { DownloadButton } from "@/components/download-button";
 import { PinnedResumes } from "@/components/resume/pinned-resumes";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { DocxImport } from "@/components/resume/docx-import";
+import { Guide } from "@/components/resume/guide";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
@@ -175,162 +176,166 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
   }, [loadedResume]);
 
   return (
-    <div className="flex flex-col max-w-none md:max-w-4xl w-full md:w-4/5">
-
-      <DocxImport persistedData={persistedData} loadedResume={activeResume} />
-
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-        <div className="flex flex-row justify-start items-center">
-          <h2 className="text-lg flex flex-row items-center">Your Resumé<CornerRightDown size={18} /></h2>
-          <Button
-            onClick={() => setMode(prev => prev === "edit" ? "preview" : "edit")}
-            variant="ghost"
-            className="text-blue-600"
-          >
-            {mode === "edit" ? "Preview" : "Edit"} Resumé
-          </Button>
-          <DownloadButton 
-            fileType="docx" 
-            userId={userId} 
-            data={persistedData} 
-            loadedResume={activeResume} 
-          />
-          <DownloadButton 
-            fileType="html" 
-            userId={userId} 
-            data={persistedData} 
-            loadedResume={activeResume} 
-          />
-        </div>
-
-        <div className="flex flex-row justify-start items-center">
-          
-        </div>
-
-        <Suspense fallback={<div>Loading pinned resumés...</div>}>
-          <PinnedResumes userId={userId} activeResume={activeResume} setActiveResume={setActiveResume} />
-        </Suspense>
+    <div className="flex-1 w-full flex flex-col md:flex-row p-5 gap-3">
+      <div>
+        <DocxImport persistedData={persistedData} loadedResume={activeResume} />
+        <Guide />
       </div>
 
-      {mode === "preview" ? (
-        <div className="w-100 border p-5 bg-white">
-          <Preview persistedData={persistedData} loadedResume={activeResume} />
-        </div>
-      ) : (
-      <div className="w-100 border p-5 bg-white">
-        {activeResume.fields.positions.map((item, index) => {
-
-          let childComponent;
-          switch (item) {
-            case "contactinfos":
-              childComponent = (
-                <ContactInfo 
-                  userId={userId} 
-                  loadedResume={activeResume} 
-                  handleMoveSectionUp={moveSectionUp} 
-                  handleMoveSectionDown={moveSectionDown} 
-                  handleSetPersistedData={setPersistedData}
-                  persistedData={persistedData.contactinfos}
-                  shouldLoadData={shouldLoadData}
-                  index={index}
-                  fieldsLength={activeResume.fields.positions.length}
-                />
-              );
-              break;
-            case "skills":
-              childComponent = (
-                <Skills 
-                  userId={userId} 
-                  loadedResume={activeResume} 
-                  handleMoveSectionUp={moveSectionUp} 
-                  handleMoveSectionDown={moveSectionDown} 
-                  handleSetPersistedData={setPersistedData}
-                  handleUpdateResume={updateResume}
-                  persistedData={persistedData.skills}
-                  shouldLoadData={shouldLoadData}
-                  index={index}
-                  fieldsLength={activeResume.fields.positions.length}
-                />
-              );
-              break;
-            case "roles":
-              childComponent = (
-                <Roles 
-                  userId={userId} 
-                  loadedResume={activeResume} 
-                  handleMoveSectionUp={moveSectionUp} 
-                  handleMoveSectionDown={moveSectionDown} 
-                  handleSetPersistedData={setPersistedData}
-                  handleUpdateResume={updateResume}
-                  persistedData={persistedData.roles}
-                  shouldLoadData={shouldLoadData}
-                  index={index}
-                  fieldsLength={activeResume.fields.positions.length}
-                />
-              );
-              break;
-            case "educations":
-              childComponent = (
-                <Educations 
-                  userId={userId} 
-                  loadedResume={activeResume} 
-                  handleMoveSectionUp={moveSectionUp} 
-                  handleMoveSectionDown={moveSectionDown} 
-                  handleSetPersistedData={setPersistedData}
-                  handleUpdateResume={updateResume}
-                  persistedData={persistedData.educations}
-                  shouldLoadData={shouldLoadData}
-                  index={index}
-                  fieldsLength={activeResume.fields.positions.length}
-                />
-              );
-              break;
-            default:
-              // Handle custom sections
-              if (item.startsWith("customsection-")) {
-                const sectionId = parseInt(item.replace("customsection-", ""));
-
-                if (sectionId) {
-                  childComponent = (
-                    <CustomSection
-                      userId={userId}
-                      loadedResume={activeResume}
-                      handleMoveSectionUp={moveSectionUp}
-                      handleMoveSectionDown={moveSectionDown}
-                      handleSetPersistedData={setPersistedData}
-                      persistedData={persistedData[`customsection-${sectionId}`] || []}
-                      shouldLoadData={shouldLoadData}
-                      index={index}
-                      fieldsLength={activeResume.fields.positions.length}
-                      sectionId={sectionId}
-                    />
-                  );
-                }
-              }
-              break;
-          }
-
-          return (
-            <div
-              key={index}
-              className="flex flex-row items-start justify-start"
+      <div className="flex flex-col max-w-none md:max-w-4xl w-full md:w-4/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+          <div className="flex flex-row justify-start items-center">
+            <h2 className="text-lg flex flex-row items-center">Your Resumé<CornerRightDown size={18} /></h2>
+            <Button
+              onClick={() => setMode(prev => prev === "edit" ? "preview" : "edit")}
+              variant="ghost"
+              className="text-blue-600"
             >
-              {childComponent}
-            </div>
-          );
-        })}
+              {mode === "edit" ? "Preview" : "Edit"} Resumé
+            </Button>
+            <DownloadButton 
+              fileType="docx" 
+              userId={userId} 
+              data={persistedData} 
+              loadedResume={activeResume} 
+            />
+            <DownloadButton 
+              fileType="html" 
+              userId={userId} 
+              data={persistedData} 
+              loadedResume={activeResume} 
+            />
+          </div>
 
-        {/* Add Custom Section Button */}
-        <NewCustomSection 
-          showNewSectionForm={showNewSectionForm}
-          handleSetShowNewSectionForm={setShowNewSectionForm}
-          newSectionName={newSectionName}
-          handleSetNewSectionName={setNewSectionName}
-          handleCreateCustomSection={handleCreateCustomSection}
-        />
+          <div className="flex flex-row justify-start items-center">
+            
+          </div>
+
+          <Suspense fallback={<div>Loading pinned resumés...</div>}>
+            <PinnedResumes userId={userId} activeResume={activeResume} setActiveResume={setActiveResume} />
+          </Suspense>
+        </div>
+
+        {mode === "preview" ? (
+          <div className="w-100 border p-5 bg-white">
+            <Preview persistedData={persistedData} loadedResume={activeResume} />
+          </div>
+        ) : (
+        <div className="w-100 border p-5 bg-white">
+          {activeResume.fields.positions.map((item, index) => {
+
+            let childComponent;
+            switch (item) {
+              case "contactinfos":
+                childComponent = (
+                  <ContactInfo 
+                    userId={userId} 
+                    loadedResume={activeResume} 
+                    handleMoveSectionUp={moveSectionUp} 
+                    handleMoveSectionDown={moveSectionDown} 
+                    handleSetPersistedData={setPersistedData}
+                    persistedData={persistedData.contactinfos}
+                    shouldLoadData={shouldLoadData}
+                    index={index}
+                    fieldsLength={activeResume.fields.positions.length}
+                  />
+                );
+                break;
+              case "skills":
+                childComponent = (
+                  <Skills 
+                    userId={userId} 
+                    loadedResume={activeResume} 
+                    handleMoveSectionUp={moveSectionUp} 
+                    handleMoveSectionDown={moveSectionDown} 
+                    handleSetPersistedData={setPersistedData}
+                    handleUpdateResume={updateResume}
+                    persistedData={persistedData.skills}
+                    shouldLoadData={shouldLoadData}
+                    index={index}
+                    fieldsLength={activeResume.fields.positions.length}
+                  />
+                );
+                break;
+              case "roles":
+                childComponent = (
+                  <Roles 
+                    userId={userId} 
+                    loadedResume={activeResume} 
+                    handleMoveSectionUp={moveSectionUp} 
+                    handleMoveSectionDown={moveSectionDown} 
+                    handleSetPersistedData={setPersistedData}
+                    handleUpdateResume={updateResume}
+                    persistedData={persistedData.roles}
+                    shouldLoadData={shouldLoadData}
+                    index={index}
+                    fieldsLength={activeResume.fields.positions.length}
+                  />
+                );
+                break;
+              case "educations":
+                childComponent = (
+                  <Educations 
+                    userId={userId} 
+                    loadedResume={activeResume} 
+                    handleMoveSectionUp={moveSectionUp} 
+                    handleMoveSectionDown={moveSectionDown} 
+                    handleSetPersistedData={setPersistedData}
+                    handleUpdateResume={updateResume}
+                    persistedData={persistedData.educations}
+                    shouldLoadData={shouldLoadData}
+                    index={index}
+                    fieldsLength={activeResume.fields.positions.length}
+                  />
+                );
+                break;
+              default:
+                // Handle custom sections
+                if (item.startsWith("customsection-")) {
+                  const sectionId = parseInt(item.replace("customsection-", ""));
+
+                  if (sectionId) {
+                    childComponent = (
+                      <CustomSection
+                        userId={userId}
+                        loadedResume={activeResume}
+                        handleMoveSectionUp={moveSectionUp}
+                        handleMoveSectionDown={moveSectionDown}
+                        handleSetPersistedData={setPersistedData}
+                        persistedData={persistedData[`customsection-${sectionId}`] || []}
+                        shouldLoadData={shouldLoadData}
+                        index={index}
+                        fieldsLength={activeResume.fields.positions.length}
+                        sectionId={sectionId}
+                      />
+                    );
+                  }
+                }
+                break;
+            }
+
+            return (
+              <div
+                key={index}
+                className="flex flex-row items-start justify-start"
+              >
+                {childComponent}
+              </div>
+            );
+          })}
+
+          {/* Add Custom Section Button */}
+          <NewCustomSection 
+            showNewSectionForm={showNewSectionForm}
+            handleSetShowNewSectionForm={setShowNewSectionForm}
+            newSectionName={newSectionName}
+            handleSetNewSectionName={setNewSectionName}
+            handleCreateCustomSection={handleCreateCustomSection}
+          />
+        </div>
+        )}
+
       </div>
-      )}
-
     </div>
   );
 }

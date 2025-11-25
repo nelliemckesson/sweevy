@@ -158,7 +158,8 @@ export function DocxImport({
             <div>
               <p>
                 Drag items from your imported resumé into the correct location in your Sweevy resumé. 
-                You can rearrange items and adjust the design settings once the text has been imported.
+                You can rearrange items, edit section titles and item text, and adjust the design settings 
+                once the text has been imported.
               </p>
               <DocxImportMapper importedData={data} loadedResume={loadedResume} persistedData={persistedData} />
             </div>
