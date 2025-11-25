@@ -37,14 +37,14 @@ export interface PersistedData {
 export interface SubSectionProps {
   userId: string;
   loadedResume?: ResumeField;
-  handleMoveSectionUp: (index: number) => void;
-  handleMoveSectionDown: (index: number) => void;
-  handleSetPersistedData: React.Dispatch<React.SetStateAction<PersistedData>>;
+  handleMoveSectionUp?: (index: number) => void;
+  handleMoveSectionDown?: (index: number) => void;
+  handleSetPersistedData?: React.Dispatch<React.SetStateAction<PersistedData>>;
   handleUpdateResume?: (updatedResume: ResumeField) => void;
-  persistedData: any[];
-  shouldLoadData: boolean;
-  index: number;
-  fieldsLength: number;
+  persistedData?: any[];
+  shouldLoadData?: boolean;
+  index?: number;
+  fieldsLength?: number;
 }
 
 export interface FormProps {

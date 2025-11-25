@@ -69,7 +69,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
         <div
           ref={ref}
           className={cn(
-            'relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto',
+            'relative bg-white rounded-lg shadow-xl w-full max-h-[90vh] overflow-auto',
             className
           )}
         >

@@ -281,7 +281,7 @@ export function DraggableFields({ fields, newText, parent, handleSetFields, hand
       ))}
       <Button variant="secondary" onClick={addField}><Plus size={20} />Add another {newText || "item"}</Button>
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal className="max-w-lg" isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">
           <DesignToolbar
             field={activeField}

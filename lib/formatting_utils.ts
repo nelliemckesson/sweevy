@@ -15,10 +15,17 @@ export function preformatData(item, data, activeResume) {
     educations: "Education"
   }
 
+  console.log(data);
+  console.log(item);
+
 	let sectionData = data[item];
 
 	if (item.startsWith("customsection")) {
-		sectionData = data[item][0];
+		if (data.hasOwnProperty(item) && data[item].length > 0) {
+			sectionData = data[item][0];
+		} else {
+			sectionData = {};
+		}
 	}
 
 	console.log(sectionData);

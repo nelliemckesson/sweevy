@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { DownloadButton } from "@/components/download-button";
 import { PinnedResumes } from "@/components/resume/pinned-resumes";
 import { DraggableFields } from "@/components/ui/draggable-fields";
+import { DocxImport } from "@/components/resume/docx-import";
 import { ContactInfo } from "@/components/resume/contact-info";
 import { Skills } from "@/components/resume/skills";
 import { Roles } from "@/components/resume/roles";
 import { Educations } from "@/components/resume/educations";
 import { CustomSection } from "@/components/resume/custom-section";
 import { Preview } from "@/components/resume/preview";
+import { NewCustomSection } from "@/components/resume/new-custom-section";
 import { setResume, setCustomSection } from "@/app/actions/db";
 
 // TO DO: 
@@ -24,7 +26,7 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 // Better landing page
 // Rate limiting
 // Import a resume (docx)
-// Leave a tip
+// Leave a tip?
 // Contact/bugs form
 
 // V2:
@@ -173,7 +175,9 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
   }, [loadedResume]);
 
   return (
-    <div className="max-w-none md:max-w-4xl w-full md:w-4/5">
+    <div className="flex flex-col max-w-none md:max-w-4xl w-full md:w-4/5">
+
+      <DocxImport persistedData={persistedData} loadedResume={activeResume} />
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <div className="flex flex-row justify-start items-center">
@@ -317,46 +321,13 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
         })}
 
         {/* Add Custom Section Button */}
-        <div className="mt-6 border-t-2 pt-4">
-          {!showNewSectionForm ? (
-            <Button
-              onClick={() => setShowNewSectionForm(true)}
-              variant="outline"
-            >
-              + Add Custom Section
-            </Button>
-          ) : (
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="section-name" className="text-sm font-medium">
-                  Section Name (optional)
-                </label>
-                <input
-                  id="section-name"
-                  type="text"
-                  value={newSectionName}
-                  onChange={(e) => setNewSectionName(e.target.value)}
-                  placeholder="e.g., Certifications, Publications, etc."
-                  className="border rounded px-3 py-2"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={handleCreateCustomSection}>
-                  Create Section
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowNewSectionForm(false);
-                    setNewSectionName("");
-                  }}
-                  variant="outline"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        <NewCustomSection 
+          showNewSectionForm={showNewSectionForm}
+          handleSetShowNewSectionForm={setShowNewSectionForm}
+          newSectionName={newSectionName}
+          handleSetNewSectionName={setNewSectionName}
+          handleCreateCustomSection={handleCreateCustomSection}
+        />
       </div>
       )}
 

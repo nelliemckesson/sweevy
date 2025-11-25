@@ -1,16 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import mammoth from 'mammoth';
+import { ResumeField, PersistedData } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Select } from "@/components/ui/select";
+import { DocxImportMapper } from "@/components/resume/docx-import-mapper";
+
+// Example loadedResume:
+// {
+//  "positions": [
+//    "contactinfos",
+//    "skills",
+//    "roles",
+//    "educations"
+//  ],
+//  "titles": {"skills": "Ninja Skills"}
+//  "classnames": {"skills": ["fontsize36"]}
+//  "contactinfos": {
+//    2: {"position": 0},
+//    5: {"position": 3}
+//  },
+//  "roles": {
+//    1: {
+//      "position": 0,
+//      "subitems": {
+//        3: {
+//          "position": 0
+//        },
+//        6: {
+//          "position": 2
+//        }
+//      }
+//    }
+//  }
+// }
 
 // --------
 // DESCRIPTION: 
 // Import a docx resume file
 // --------
-export function DocxImport() {
+export function DocxImport({
+  loadedResume, 
+  persistedData
+}: {
+  loadedResume: ResumeField, 
+  persistedData: PersistedData
+}): Promise<JSX.Element> {
   const [importing, setImporting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -114,59 +151,16 @@ export function DocxImport() {
     <div className="mb-3">
       <Button onClick={toggleImporting}>Import a Resumé</Button>
 
-      <Modal isOpen={importing} onClose={cancelImporting}>
+      <Modal className="w-auto" isOpen={importing} onClose={cancelImporting}>
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4">Import a Resumé</h2>
           {(data && selecting) ? (
-            <div className="flex flex-col gap-4">
-              <div>
-                <Button
-                  onClick={selectAll}
-                  variant="outline"
-                  className="mb-3"
-                >
-                  Select All
-                </Button>
-                {data.map((item, i) => {
-                  return (
-                    <div key={i}>
-                      <input
-                        type="checkbox"
-                        id={`select${i}`}
-                        name={`select${i}`}
-                        aria-label="Import paragraph"
-                        checked={selectedParas.hasOwnProperty(i)}
-                        onChange={e => selectParagraph(i)}
-                      />
-                      <select 
-                        value={selectedParas.hasOwnProperty(i) ? selectedParas[i].type : "roleitem"} 
-                        onChange={e => setParagraphType(i, e.target.value)} 
-                        className="border text-sm p-1 rounded-sm"
-                      >
-                        <option value="roleitem">Paragraph Type...</option>
-                        {options.map(item => {
-                          return <option key={item[0]} value={item[0]}>{item[1]}</option>
-                        })}      
-                      </select>
-                      <p>{item}</p>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="flex gap-2 justify-end">
-                <Button
-                  onClick={cancelImporting}
-                  variant="outline"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleImport}
-                  disabled={!selectedFile || isProcessing}
-                >
-                  Import Selected Items
-                </Button>
-              </div>
+            <div>
+              <p>
+                Drag items from your imported resumé into the correct location in your Sweevy resumé. 
+                You can rearrange items and adjust the design settings once the text has been imported.
+              </p>
+              <DocxImportMapper importedData={data} loadedResume={loadedResume} persistedData={persistedData} />
             </div>
           ) : (
             <div className="flex flex-col gap-4">

@@ -19,9 +19,6 @@ export function Preview({persistedData, loadedResume}): Promise<JSX.Element> {
   const [activeResume, setActiveResume] = useState({});
   const [data, setData] = useState({});
 
-  console.log(persistedData);
-  console.log(loadedResume);
-
   useEffect(() => {
     setActiveResume(loadedResume);
     setData(persistedData);
@@ -30,8 +27,6 @@ export function Preview({persistedData, loadedResume}): Promise<JSX.Element> {
   return (
     <div className="flex-1 w-full flex flex-col gap-3 mb-4">
       {activeResume?.fields?.positions.map((item, index) => {
-        console.log("DATA");
-        console.log(data);
         let {sectionTitle, classnames, subitems} = preformatData(item, data, activeResume);
 
         subitems = subitems.map((subitem, subindex) => {
