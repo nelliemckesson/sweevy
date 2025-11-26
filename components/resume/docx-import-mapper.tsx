@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ResumeField, PersistedData } from "@/lib/types";
 import { preformatData } from "@/lib/formatting_utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,46 @@ import { NewCustomSection } from "@/components/resume/new-custom-section";
 // DESCRIPTION: 
 // Map paragraphs from docx file to the correct sections/types
 // --------
+
+// persistedData:
+  // {
+  //   contactinfos: [
+  //     {id, label, value, include, position, classnames}
+  //   ],
+  //   roles: [{
+  //     classnames, 
+  //     id, 
+  //     include, 
+  //     label, 
+  //     position, 
+  //     roleitems: [{
+  //       classnames, id, include, parent, position, value
+  //     }],
+  //     value
+  //   }],
+  //   educations: [{
+  //     classnames, 
+  //     id, 
+  //     include, 
+  //     label, 
+  //     position, 
+  //     educationitems: [{
+  //       classnames, id, include, parent, position, value
+  //     }],
+  //     value
+  //   }],
+  //   customsection-1: [
+  //     classnames,
+  //     customsectionitems: [{
+  //       classnames, id, include, parent, position, value
+  //     }],
+  //     id,
+  //     include,
+  //     name,
+  //     position,
+  //   ]
+  // }
+
 export function DocxImportMapper({
   importedData,
   loadedResume,
@@ -22,29 +62,67 @@ export function DocxImportMapper({
 }): Promise<JSX.Element> {
   const [resumeData, setResumeData] = useState<PersistedData | null>(null);
   const [draggedParagraph, setDraggedParagraph] = useState<{index: number, text: string} | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<{index?: number, section: string} | null>(null);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number, text: string) => {
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number, text: string): void => {
     setDraggedParagraph({ index, text });
     e.dataTransfer.effectAllowed = 'move';
-  };
+  }, []);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback((): void => {
     setDraggedParagraph(null);
-  };
+    setDragOverItem(null);
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  // only need section label to insert new item
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, section: string): void => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropZoneType: string) => {
-    e.preventDefault();
-    if (draggedParagraph) {
-      console.log(`Dropped paragraph ${draggedParagraph.index} (${draggedParagraph.text}) into ${dropZoneType}`);
-      // TODO: Implement actual drop logic
+    if (draggedParagraph === null) return;
+
+    if (draggedParagraph.index === index) {
+      setDragOverItem(null);
+    } else {
+      setDragOverItem({section});
     }
+  }, [draggedItem]);
+
+  // use section label and item index to insert new item
+  const handleDragOverSubitem = useCallback((e: React.DragEvent<HTMLDivElement>, index: number, section: string): void => {
+    e.preventDefault();
+
+    if (draggedParagraph === null) return;
+
+    if (draggedParagraph.index === index) {
+      setDragOverItem(null);
+    } else {
+      setDragOverItem({index, section});
+    }
+  }, [draggedItem]);
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+
+    if (draggedParagraph === null || dragOverItem === null) {
+      setDraggedItem(null);
+      setDragOverItem(null);
+      return;
+    }
+
+    const fields = persistedData[dragOverItem.section];
+    if (dragOverItem.hasOwnProperty("index")) {
+      fields = fields[dragOverItem.index];
+    }
+
+    console.log(fields);
+
+    const newFields = [...fields]; 
+
+    // TO DO: create the new field and add it to the end of the section
+
     setDraggedParagraph(null);
-  };
+    setDragOverItem(null);
+  }, [draggedParagraph, dragOverItem]);
 
  useEffect(() => {
     if (persistedData) {
@@ -89,7 +167,7 @@ export function DocxImportMapper({
             subSubitems = subSubitems.filter(subSubitem => subSubitem.include);
             return (
               <div key={`sub${subindex}`}>
-                <div className="ml-4">
+                <div className={`ml-4 ${subitem.changed ? "text-yellow-400": ""}`}>
                   <div className="font-serif flex flex-row justify-start items-center text-gray-400">
                     {subClassnames.indexOf("bullet") > -1 && (
                       <span className={subClassnames.join(" ")}>&#8226;&nbsp;</span>
@@ -106,6 +184,7 @@ export function DocxImportMapper({
                     <div
                       className="dropzone border-2 border-dashed border-blue-500 text-blue-500 text-black h-10 flex items-center justify-center transition-colors hover:bg-blue-50"
                       onDragOver={handleDragOver}
+                      onDragOver={(e) => handleDragOverSubitem(e, subindex, item)}
                       onDrop={(e) => handleDrop(e, `${item}-description-${subindex}`)}
                     >
                       Drop new description items here
@@ -150,7 +229,7 @@ export function DocxImportMapper({
               )}
               <div
                 className="dropzone border-2 border-dashed border-blue-500 text-blue-500 text-black h-10 flex items-center justify-center transition-colors hover:bg-blue-50"
-                onDragOver={handleDragOver}
+                onDragOver={(e) => handleDragOver(e, item)}
                 onDrop={(e) => handleDrop(e, `${item}-section`)}
               >
                 Drop new items here
