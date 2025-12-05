@@ -151,9 +151,9 @@ export function DocxImportMapper({
     setDragOverItem(null);
   }, [draggedParagraph, dragOverItem]);
 
-  const removeNewField = (subindex, item) => {
+  const removeNewField = (item, itemIndex, parentIndex, section) => {
     console.log("would remove");
-    console.log(subindex, item);
+    console.log(itemIndex, itemType, section);
 
     // TO DO remove from resumeData
 
@@ -216,7 +216,7 @@ export function DocxImportMapper({
                     <div className={`font-serif flex flex-row justify-start items-center ${subitem.changed ? 'text-blue-500' : 'text-gray-400'}`}>
                       {subitem.changed && (
                         <button
-                          onClick={() => removeNewField(subindex, item)}
+                          onClick={() => removeNewField(subitem, subindex, null, item)}
                           className="p-2 text-gray-400 md:text-gray-400 md:hover:text-red-500 hover:bg-red-50 rounded"
                           aria-label="Remove item"
                         >
@@ -238,7 +238,7 @@ export function DocxImportMapper({
                       <div
                         className="dropzone border-2 border-dashed border-blue-500 text-blue-500 text-black h-10 flex items-center justify-center transition-colors hover:bg-blue-50"
                         onDragOver={(e) => handleDragOverSubitem(e, subindex, item)}
-                        onDrop={(e) => handleDrop(e, `${item}-description-${subindex}`)}
+                        onDrop={(e) => handleDrop(e)}
                       >
                         Drop new description items here
                       </div>
@@ -250,6 +250,15 @@ export function DocxImportMapper({
                         key={`subsub${subSubindex}`} 
                         className="font-serif flex flex-row justify-start items-center text-gray-400 ml-8"
                       >
+                        {subSubitem.changed && (
+                          <button
+                            onClick={() => removeNewField(subSubitem, subSubindex, subindex, item)}
+                            className="p-2 text-gray-400 md:text-gray-400 md:hover:text-red-500 hover:bg-red-50 rounded"
+                            aria-label="Remove item"
+                          >
+                            <X size={18} />
+                          </button>
+                        )}
                         {subSubitem.classnames?.indexOf("bullet") > -1 && (
                           <span className={subSubitem.classnames?.join(" ")}>&#8226;&nbsp;</span>
                         )}
@@ -283,7 +292,7 @@ export function DocxImportMapper({
                 <div
                   className="dropzone border-2 border-dashed border-blue-500 text-blue-500 text-black h-10 flex items-center justify-center transition-colors hover:bg-blue-50"
                   onDragOver={(e) => handleDragOver(e, item)}
-                  onDrop={(e) => handleDrop(e, `${item}-section`)}
+                  onDrop={(e) => handleDrop(e)}
                 >
                   Drop new items here
                 </div>
@@ -294,7 +303,7 @@ export function DocxImportMapper({
           <div
             className="dropzone border-2 border-dashed border-blue-500 text-blue-500 text-black h-10 flex items-center justify-center mt-10 transition-colors hover:bg-blue-50"
             onDragOver={(e) => handleDragOver(e, item)}
-            onDrop={(e) => handleDrop(e, `${item}-section`)}
+            onDrop={(e) => handleDrop(e)}
           >
             Create new section and add item
           </div>

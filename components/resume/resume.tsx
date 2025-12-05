@@ -26,11 +26,11 @@ import { setResume, setCustomSection } from "@/app/actions/db";
 // don't allow align styles on spans selections?
 // Better landing page
 // Rate limiting
-// Import a resume (docx)
-// Leave a tip?
 // Contact/bugs form
 
 // V2:
+// Import a resume (docx)
+// Leave a tip?
 // Subscription plans: 0, 3/30, 5/50
 // Cap number of items based on plan
 // Load a job description side-by-side
@@ -175,10 +175,11 @@ export function Resume({ userId, loadedResume }: SubSectionProps): Promise<JSX.E
     setActiveResume(loadedResume);
   }, [loadedResume]);
 
+  // <DocxImport persistedData={persistedData} loadedResume={activeResume} />
+
   return (
     <div className="flex-1 w-full flex flex-col md:flex-row p-5 gap-3">
       <div>
-        <DocxImport persistedData={persistedData} loadedResume={activeResume} />
         <Guide />
       </div>
 
