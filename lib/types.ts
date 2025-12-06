@@ -51,4 +51,5 @@ export interface FormProps {
   userId: string;
   fields: Field[];
   parent?: number;
+  handleSetPersistedData?: React.Dispatch<React.SetStateAction<PersistedData>>;
 }

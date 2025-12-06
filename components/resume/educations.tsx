@@ -123,7 +123,7 @@ export function Educations({
         />
       </div>
 
-      <EducationsForm fields={data || []} userId={userId} />
+      <EducationsForm fields={data || []} userId={userId} handleSetPersistedData={handleSetPersistedData} />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">

@@ -5,7 +5,7 @@ import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setContactInfo } from "@/app/actions/db";
 
-export function ContactInfoForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+export function ContactInfoForm({ userId, fields: initialFields, handleSetPersistedData }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
   const [pendingSaveType, setPendingSaveType] = useState<'immediate' | 'debounced' | null>(null);
@@ -47,6 +47,8 @@ export function ContactInfoForm({ userId, fields: initialFields }: FormProps): J
 
       if (savedFields) {
         setFields(savedFields);
+        // update persisted data at the parent level
+        handleSetPersistedData(prev => ({...prev, contactinfos: savedFields}));
         setOriginalFields(savedFields);
       }
     } finally {

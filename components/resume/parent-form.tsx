@@ -54,12 +54,8 @@ export function ParentForm({
     setPendingSaveType(immediate ? 'immediate' : 'debounced');
   };
 
-  // TO DO: Handle saving any custom fields
-
   const handleSave = useCallback(async (): Promise<void> => {
     if (isSavingRef.current) return;
-
-    console.log("saving");
 
     isSavingRef.current = true;
 
@@ -68,13 +64,10 @@ export function ParentForm({
         .filter(field => field.changed)
         .map(field => {
           const { changed, roleitems, educationitems, ...rest } = field;
-          console.log(rest);
-          return handleSaveItem(userId, rest);
+          return handleSaveItem(userId, rest); // db function
         });
 
       const savedFields = await Promise.all(updatePromises);
-
-      console.log(savedFields);
 
       // delete any removed fields
       const deletePromises = removed

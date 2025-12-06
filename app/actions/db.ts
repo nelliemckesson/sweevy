@@ -111,7 +111,7 @@ export async function setContactInfo(userId: string, fields: Field[]): Promise<F
     return null;
   }
 
-  return data?.fields ?? null;
+  return data[0]?.fields ?? null;
 }
 
 // SKILLS

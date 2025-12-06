@@ -5,7 +5,7 @@ import { Field, FormProps } from "@/lib/types";
 import { DraggableFields } from "@/components/ui/draggable-fields";
 import { setSkill, deleteSkill } from "@/app/actions/db";
 
-export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.Element {
+export function SkillsForm({ userId, fields: initialFields, handleSetPersistedData }: FormProps): JSX.Element {
   const [fields, setFields] = useState<Field[]>([]);
   const [removed, setRemoved] = useState<Field[]>([]);
   const [originalFields, setOriginalFields] = useState<Field[]>([]);
@@ -53,8 +53,6 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
 
       const savedFields = await Promise.all(updatePromises);
 
-      console.log(savedFields);
-
       // delete any removed fields
       const deletePromises = removed
         .filter(field => field.id !== undefined)
@@ -84,6 +82,8 @@ export function SkillsForm({ userId, fields: initialFields }: FormProps): JSX.El
       });
 
       setFields(cleanedFields);
+      // update persisted data at the parent level
+      handleSetPersistedData(prev => ({...prev, skills: cleanedFields}));
       setRemoved([]);
       setOriginalFields(cleanedFields);
     } finally {

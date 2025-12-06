@@ -123,7 +123,7 @@ export function Skills({
         />
       </div>
 
-      <SkillsForm fields={data || []} userId={userId} />
+      <SkillsForm fields={data || []} userId={userId} handleSetPersistedData={handleSetPersistedData} />
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6">

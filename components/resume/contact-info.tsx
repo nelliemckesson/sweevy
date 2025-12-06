@@ -47,7 +47,7 @@ export function ContactInfo({
           fieldsLength={fieldsLength}
         />
       </div>
-      <ContactInfoForm fields={data || []} userId={userId} />
+      <ContactInfoForm fields={data || []} userId={userId} handleSetPersistedData={handleSetPersistedData} />
     </div>
   );
 }
